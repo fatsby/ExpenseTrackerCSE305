@@ -7,3 +7,8 @@ Back-end: SpringBoot, Spring Security, MySQL
 
 # TUTORIAL
 Đã setup sẵn folder Project cho front-end và back-end, liên hệ Minh Trí để hướng dẫn cài
+
+# MYSQL DATABASE AUTH:
+USER: bombardio
+<br>
+Password: Crocodilo@1
