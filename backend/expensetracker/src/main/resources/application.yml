@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: expensetracker
     datasource:
       url: jdbc:mysql://localhost:3306/expensetracker
       username: bombardio
@@ -15,3 +13,5 @@ spring:
           format_sql: true
       database: mysql
       database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+    application:
+      name: expensetracker
