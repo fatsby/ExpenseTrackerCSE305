@@ -2,6 +2,7 @@
  CSE305 Project Expense Tracker
 
 Front-end: ReactJS, Tailwind, shadcn
+<br>
 Back-end: SpringBoot, Spring Security, MySQL
 
 # TUTORIAL
