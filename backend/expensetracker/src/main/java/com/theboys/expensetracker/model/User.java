@@ -17,8 +17,13 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private int money;
+
 
     public User(int id, String username, String password, Role role, int money) {
         this.id = id;
@@ -40,17 +45,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     public String getPassword() {

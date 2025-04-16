@@ -16,3 +16,8 @@ spring:
 
     application:
       name: expensetracker
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

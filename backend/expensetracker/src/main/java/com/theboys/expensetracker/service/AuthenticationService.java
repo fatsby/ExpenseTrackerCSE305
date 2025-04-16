@@ -1,6 +1,7 @@
 package com.theboys.expensetracker.service;
 
 import com.theboys.expensetracker.model.AuthenticationResponse;
+import com.theboys.expensetracker.model.Role;
 import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.repo.UserRepo;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +30,9 @@ public class AuthenticationService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user.setRole(request.getRole());
+        user.setRole(Role.USER);  // Default role
+        user.setMoney(0);         // Default money
+
         user = userRepo.save(user);
 
         String token = jwtService.generateToken(user);
