@@ -12,3 +12,7 @@ Back-end: SpringBoot, Spring Security, MySQL
 USER: bombardio
 <br>
 Password: Crocodilo@1
+# DEFAULT APP ADMIN ACCOUNT:
+USERNAME: admin
+<br>
+password: 123
