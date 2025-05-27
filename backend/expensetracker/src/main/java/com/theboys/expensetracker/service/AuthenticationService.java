@@ -6,6 +6,7 @@ import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.repo.UserRepo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,17 +36,23 @@ public class AuthenticationService {
 
         user = userRepo.save(user);
 
+        String role = user.getRole().name();
         String token = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(token);
+        return new AuthenticationResponse(token, role);
     }
 
     public AuthenticationResponse authenticate(User request){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        User user = userRepo.findByUsername(request.getUsername()).orElseThrow();
+        User user = userRepo.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         String token = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(token);
+        // Role is an enum, so we get its name (e.g., "ADMIN")
+        String role = user.getRole().name();
+
+        return new AuthenticationResponse(token, role);
     }
 }
