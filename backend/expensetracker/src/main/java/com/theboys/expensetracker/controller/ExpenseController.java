@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,6 +30,7 @@ public class ExpenseController {
     public ResponseEntity<Expense> createExpense(@AuthenticationPrincipal User user, @RequestBody Expense expenseRequest) {
 
         expenseRequest.setUser(user);
+        expenseRequest.setDate(LocalDate.now());
 
         Expense savedExpense = expenseService.saveExpense(expenseRequest);
         return ResponseEntity.ok(savedExpense);

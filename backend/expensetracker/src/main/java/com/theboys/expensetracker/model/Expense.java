@@ -23,16 +23,8 @@ public class Expense {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Expense(int id, String description, int amount, LocalDate date, Category category, User user) {
-        this.id = id;
-        this.description = description;
-        this.amount = amount;
-        this.date = date;
-        this.category = category;
-        this.user = user;
+    public Expense() {
     }
-
-    public Expense() {}
 
     public int getId() {
         return id;
