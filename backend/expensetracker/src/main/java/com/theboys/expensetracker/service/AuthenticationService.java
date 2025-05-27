@@ -30,7 +30,9 @@ public class AuthenticationService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPin(request.getPin());
 
+        user.setBudget(8000);
         user.setRole(Role.USER);  // Default role
         user.setMoney(0);         // Default money
 

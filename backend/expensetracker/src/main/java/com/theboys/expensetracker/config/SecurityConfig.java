@@ -65,9 +65,10 @@ public class SecurityConfig {
             if (existingAdmin.isEmpty()){
                 User admin = new User();
                 admin.setUsername("admin");
-                admin.setPassword(passwordEncoder.encode("123"));
+                admin.setPassword(passwordEncoder.encode("1234"));
                 admin.setRole(Role.valueOf("ADMIN"));
-                admin.setMoney(99999);
+                admin.setPin(1234);
+                admin.setMoney(999999);
                 userRepo.save(admin);
                 System.out.println("Admin created");
             } else {

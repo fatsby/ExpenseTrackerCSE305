@@ -18,19 +18,27 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
+    @Column(nullable = false)
+    private int pin;
+
+    @Column(nullable = false, columnDefinition = "DOUBLE DEFAULT 8000")
+    private double budget;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int money;
+    @Column(nullable = false, columnDefinition = "DOUBLE DEFAULT 0")
+    private double money;
 
 
-    public User(int id, String username, String password, Role role, int money) {
+    public User(int id, String username, String password, Role role, double money, int pin, double budget) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.money = money;
+        this.pin = pin;
+        this.budget = budget;
     }
 
     public User() {}
@@ -76,7 +84,7 @@ public class User implements UserDetails {
         return role;
     }
 
-    public int getMoney() {
+    public double getMoney() {
         return money;
     }
 
@@ -96,7 +104,23 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public void setMoney(int money) {
+    public void setMoney(double money) {
         this.money = money;
+    }
+
+    public int getPin() {
+        return pin;
+    }
+
+    public void setPin(int pin) {
+        this.pin = pin;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 }
