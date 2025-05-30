@@ -1,17 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import LoginPage from './components/LoginPage'
+import React, { useState } from 'react';
+import HomePage from './components/HomePage';
+import AdminDashboard from './components/AdminDashboard';
+import { Home } from 'lucide-react';
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <LoginPage />
-    </>
-  )
+    return (
+        <>
+        <HomePage/>
+        </>
+    );
 }
-
 export default App
