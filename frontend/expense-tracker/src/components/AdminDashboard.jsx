@@ -34,7 +34,6 @@ const Notification = ({ message, type, onClose }) => {
                 {message}
             </div>
             {/* You could add a close button here if desired */}
-            <button onClick={onClose}>&times;</button>
         </div>
     );
 };
@@ -193,12 +192,12 @@ function AdminDashboard() {
     }, []);
 
     // Show welcome message on initial load
-    useEffect(() => {
-        const welcomeTimer = setTimeout(() => {
-            showNotification('Welcome to the Admin Dashboard!', 'success');
-        }, 500);
-        return () => clearTimeout(welcomeTimer);
-    }, [showNotification]);
+    // useEffect(() => {
+    //     const welcomeTimer = setTimeout(() => {
+    //         showNotification('Welcome to the Admin Dashboard!', 'success');
+    //     }, 500);
+    //     return () => clearTimeout(welcomeTimer);
+    // }, [showNotification]);
 
 
     // --- Event Handlers ---
@@ -272,20 +271,8 @@ function AdminDashboard() {
     // Remove user
     const handleRemoveUser = (id) => {
         const userToRemove = users.find(u => u.id === id);
-        if (!userToRemove) return;
-
-        setConfirmModal({
-            isVisible: true,
-            message: `Are you sure you want to remove ${userToRemove.name}? This action cannot be undone.`,
-            onConfirm: () => {
                 setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
                 showNotification(`User ${userToRemove.name} removed successfully`, 'success');
-                setConfirmModal({ isVisible: false, message: '', onConfirm: () => {}, onCancel: () => {} });
-            },
-            onCancel: () => {
-                setConfirmModal({ isVisible: false, message: '', onConfirm: () => {}, onCancel: () => {} });
-            }
-        });
     };
 
     // Toggle user status

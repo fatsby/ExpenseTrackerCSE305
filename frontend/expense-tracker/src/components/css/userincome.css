@@ -5,6 +5,8 @@
     padding: 20px;
     color: #333;
     padding-top: 120px;
+    cursor: url('src/assets/icons8-cursor-24.png'), auto;
+
 }
 
 .income-container {

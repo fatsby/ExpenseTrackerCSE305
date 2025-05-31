@@ -5,26 +5,24 @@ const correctPin = '1234'; // define pin
 function PinEntry() {
     const [currentPin, setCurrentPin] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
-    const messageTimeoutRef = useRef(null); // Ref to store the timeout ID
+    const messageTimeoutRef = useRef(null); 
 
     
     
 
     const showMessage = (text, type) => {
         setMessage({ text, type });
-        // Clear any existing timeout to prevent message flickering
         if (messageTimeoutRef.current) {
             clearTimeout(messageTimeoutRef.current);
         }
-        // Automatically clear message after a few seconds
         messageTimeoutRef.current = setTimeout(() => {
             setMessage({ text: '', type: '' });
-        }, 3000); // Clear after 3 seconds
+        }, 3000); 
     };
     
     const clearPin = () => {
         setCurrentPin('');
-        setMessage({ text: '', type: '' }); // Also clear message on clear
+        setMessage({ text: '', type: '' }); 
     };
 
     const verifyPin = () => {
@@ -35,10 +33,8 @@ function PinEntry() {
 
         if (currentPin === correctPin) {
             showMessage('PIN correct! Access granted.', 'success');
-            // Simulate redirection or other action after a delay
             setTimeout(() => {
-                // In a real React app with React Router, you'd use navigate('/dashboard');
-                // For direct HTML file transition:
+              
                 window.location.href = 'dashboard';
             }, 1500);
         } else {
