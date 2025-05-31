@@ -133,7 +133,7 @@
 .nav-tab:hover{
     background: linear-gradient(to right, #E55D87, #5FC3E4);
     color: white;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 
 }
 
