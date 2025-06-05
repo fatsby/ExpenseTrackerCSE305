@@ -9,10 +9,10 @@ function FullDashBoard() {
 
     return (
         <>
-            <NavBar 
-                activeTab={activeTab} 
-                onTabChange={setActiveTab} 
-                userName={userName} 
+            <NavBar
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                userName={userName}
             />
             <div> {/* Space for fixed navbar */}
                 {activeTab === 'dashboard' ? <DashBoard /> : <UserIncome />}

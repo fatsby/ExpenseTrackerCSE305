@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './css/login_reg.css';
 
 function LoginPage() {
-   
+
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [rememberLogin, setRememberLogin] = useState(false);
@@ -12,25 +12,25 @@ function LoginPage() {
     const [isLoginFormActive, setIsLoginFormActive] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
 
-  
+
     useEffect(() => {
-       
+
         if (localStorage.getItem('remember') === 'true') {
             setLoginUsername(localStorage.getItem('username') || '');
             setRememberLogin(true);
         }
 
-      
+
         const preloaderTimer = setTimeout(() => {
             setIsLoading(false);
-        }, 600); 
+        }, 600);
 
         return () => {
             clearTimeout(preloaderTimer);
         };
-    }, []); 
+    }, []);
 
-   const handleLoginSubmit = (event) => {
+    const handleLoginSubmit = (event) => {
         event.preventDefault();
 
         if (!loginUsername || !loginPassword) {
@@ -65,8 +65,8 @@ function LoginPage() {
     };
 
     const handleRegisterSubmit = (event) => {
-        event.preventDefault(); 
-        
+        event.preventDefault();
+
         if (registerPassword !== confirmPassword) {
             alert('Passwords do not match!');
             return;
@@ -78,7 +78,7 @@ function LoginPage() {
     };
 
     const handleForgotPasswordClick = (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         const email = prompt('Donate 1 Jack to recover your password?');
 
         if (email) {
@@ -96,13 +96,13 @@ function LoginPage() {
         setIsLoginFormActive(true);
     };
 
-   
+
     const handleAnchorClick = (event) => {
         if (event.target.tagName === 'A' && event.target.href) {
-            event.preventDefault(); 
-            setIsLoading(true); 
+            event.preventDefault();
+            setIsLoading(true);
             setTimeout(() => {
-                window.location.href = event.target.href; 
+                window.location.href = event.target.href;
             }, 500);
         }
     };
@@ -125,100 +125,100 @@ function LoginPage() {
             {/* Main Content Wrapper */}
             <div className="login-vh">
                 <div className="wrapper">
-                {/* Login Form */}
-                <form
-                    id="loginForm"
-                    className={isLoginFormActive ? 'active' : ''}
-                    onSubmit={handleLoginSubmit}
-                >
-                    <h1>Log in</h1>
-                    <div className="input_box">
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            id="login-username"
-                            required
-                            value={loginUsername}
-                            onChange={(e) => setLoginUsername(e.target.value)}
-                        />
-                        <i className='bx bx-user'></i>
-                    </div>
-                    <div className="input_box">
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            id="login-password"
-                            required
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                        />
-                        <i className='bx bx-lock'></i>
-                    </div>
-                    <div className="remember_forgot">
-                        <label>
+                    {/* Login Form */}
+                    <form
+                        id="loginForm"
+                        className={isLoginFormActive ? 'active' : ''}
+                        onSubmit={handleLoginSubmit}
+                    >
+                        <h1>Log in</h1>
+                        <div className="input_box">
                             <input
-                                type="checkbox"
-                                id="remember"
-                                checked={rememberLogin}
-                                onChange={(e) => setRememberLogin(e.target.checked)}
-                            /> Remember login
-                        </label>
-                        <a href="#" id="forgotPassword" onClick={handleForgotPasswordClick}>Forgot password?</a>
-                    </div>
-                    <button type="submit" className="btn">Log in</button>
-                    <div className="register_link">
-                        <span className="toggle-link" onClick={handleToggleToRegister}>Don't have an account? Register</span>
-                    </div>
-                </form>
+                                type="text"
+                                placeholder="Username"
+                                id="login-username"
+                                required
+                                value={loginUsername}
+                                onChange={(e) => setLoginUsername(e.target.value)}
+                            />
+                            <i className='bx bx-user'></i>
+                        </div>
+                        <div className="input_box">
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                id="login-password"
+                                required
+                                value={loginPassword}
+                                onChange={(e) => setLoginPassword(e.target.value)}
+                            />
+                            <i className='bx bx-lock'></i>
+                        </div>
+                        <div className="remember_forgot">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    id="remember"
+                                    checked={rememberLogin}
+                                    onChange={(e) => setRememberLogin(e.target.checked)}
+                                /> Remember login
+                            </label>
+                            <a href="#" id="forgotPassword" onClick={handleForgotPasswordClick}>Forgot password?</a>
+                        </div>
+                        <button type="submit" className="btn">Log in</button>
+                        <div className="register_link">
+                            <span className="toggle-link" onClick={handleToggleToRegister}>Don't have an account? Register</span>
+                        </div>
+                    </form>
 
-                {/* Register Form */}
-                <form
-                    id="register-form"
-                    className={!isLoginFormActive ? 'active' : ''}
-                    onSubmit={handleRegisterSubmit}
-                >
-                    <h1>Register</h1>
-                    <div className="input_box">
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            id="register-username"
-                            required
-                            value={registerUsername}
-                            onChange={(e) => setRegisterUsername(e.target.value)}
-                        />
-                        <i className='bx bx-user'></i>
-                    </div>
-                    <div className="input_box">
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            id="register-password"
-                            required
-                            value={registerPassword}
-                            onChange={(e) => setRegisterPassword(e.target.value)}
-                        />
-                        <i className='bx bx-lock'></i>
-                    </div>
-                    <div className="input_box">
-                        <input
-                            type="password"
-                            placeholder="Confirm password"
-                            id="confirm-password"
-                            required
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        <i className='bx bx-lock'></i>
-                    </div>
-                    <button type="submit" className="btn">Register</button>
-                    <div className="register_link">
-                        <span className="toggle-link" onClick={handleToggleToLogin}>Already have an account? Login</span>
-                    </div>
-                </form>
+                    {/* Register Form */}
+                    <form
+                        id="register-form"
+                        className={!isLoginFormActive ? 'active' : ''}
+                        onSubmit={handleRegisterSubmit}
+                    >
+                        <h1>Register</h1>
+                        <div className="input_box">
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                id="register-username"
+                                required
+                                value={registerUsername}
+                                onChange={(e) => setRegisterUsername(e.target.value)}
+                            />
+                            <i className='bx bx-user'></i>
+                        </div>
+                        <div className="input_box">
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                id="register-password"
+                                required
+                                value={registerPassword}
+                                onChange={(e) => setRegisterPassword(e.target.value)}
+                            />
+                            <i className='bx bx-lock'></i>
+                        </div>
+                        <div className="input_box">
+                            <input
+                                type="password"
+                                placeholder="Confirm password"
+                                id="confirm-password"
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            <i className='bx bx-lock'></i>
+                        </div>
+                        <button type="submit" className="btn">Register</button>
+                        <div className="register_link">
+                            <span className="toggle-link" onClick={handleToggleToLogin}>Already have an account? Login</span>
+                        </div>
+                    </form>
+                </div>
             </div>
-            </div>
-            
+
         </>
     );
 }
