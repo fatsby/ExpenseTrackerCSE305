@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './css/pinentry.css'; 
+import './css/pinentry.css';
 
 const correctPin = '1234'; // define pin 
 function PinEntry() {
     const [currentPin, setCurrentPin] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
-    const messageTimeoutRef = useRef(null); 
+    const messageTimeoutRef = useRef(null);
 
-    
-    
+
+
 
     const showMessage = (text, type) => {
         setMessage({ text, type });
@@ -17,12 +17,12 @@ function PinEntry() {
         }
         messageTimeoutRef.current = setTimeout(() => {
             setMessage({ text: '', type: '' });
-        }, 3000); 
+        }, 3000);
     };
-    
+
     const clearPin = () => {
         setCurrentPin('');
-        setMessage({ text: '', type: '' }); 
+        setMessage({ text: '', type: '' });
     };
 
     const verifyPin = () => {
@@ -34,19 +34,19 @@ function PinEntry() {
         if (currentPin === correctPin) {
             showMessage('PIN correct! Access granted.', 'success');
             setTimeout(() => {
-              
+
                 window.location.href = 'dashboard';
             }, 1500);
         } else {
             showMessage('Incorrect PIN. Please try again.', 'error');
             setTimeout(() => {
                 clearPin();
-            }, 1000); 
+            }, 1000);
         }
     };
 
     const handleKeyPress = (value) => {
-        setMessage({ text: '', type: '' }); 
+        setMessage({ text: '', type: '' });
 
         if (value === 'clear') {
             clearPin();
@@ -57,7 +57,7 @@ function PinEntry() {
         }
     };
 
-   
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             const key = event.key;
@@ -73,14 +73,14 @@ function PinEntry() {
 
         document.addEventListener('keydown', handleKeyDown);
 
-       
+
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             if (messageTimeoutRef.current) {
                 clearTimeout(messageTimeoutRef.current);
             }
         };
-    }, [currentPin]); 
+    }, [currentPin]);
 
     return (
         <div className="pin-body">

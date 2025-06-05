@@ -79,7 +79,7 @@ function UserIncome() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                 const percentage = ((context.parsed / total) * 100).toFixed(1);
                                 return `${context.label}: $${context.parsed.toLocaleString()} (${percentage}%)`;
@@ -127,7 +127,7 @@ function UserIncome() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return `${context.label}: $${context.parsed.y.toLocaleString()}`;
                             }
                         }
@@ -137,7 +137,7 @@ function UserIncome() {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return '$' + value.toLocaleString();
                             }
                         },
@@ -239,55 +239,55 @@ function UserIncome() {
     return (
         <div className="income-body">
             <div className="income-container">
-            <h1 className="income-header"><i class="fa-solid fa-money-bill-trend-up"></i> Income Distribution</h1>
+                <h1 className="income-header"><i class="fa-solid fa-money-bill-trend-up"></i> Income Distribution</h1>
 
-            <div className="input-section">
-                <div className="income-grid">
-                    {incomeSources.map(source => (
-                        <div key={source.id} className="income-item">
-                            <label htmlFor={source.id}>
-                                <span className="income-icon">{source.icon}</span>
-                                {source.label}
-                            </label>
-                            <input
-                                type="number"
-                                id={source.id}
-                                value={incomeValues[source.id]}
-                                min="0"
-                                onChange={handleInputChange}
-                            />
+                <div className="input-section">
+                    <div className="income-grid">
+                        {incomeSources.map(source => (
+                            <div key={source.id} className="income-item">
+                                <label htmlFor={source.id}>
+                                    <span className="income-icon">{source.icon}</span>
+                                    {source.label}
+                                </label>
+                                <input
+                                    type="number"
+                                    id={source.id}
+                                    value={incomeValues[source.id]}
+                                    min="0"
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <button className="update-btn" onClick={updateAllCharts}>
+                        🔄 Update Charts
+                    </button>
+                </div>
+
+                <div className="charts-section">
+                    <div className="chart-container">
+                        <h3>📊 Income Distribution (Pie Chart)</h3>
+                        <div className="chart-wrapper">
+                            <canvas ref={pieCanvasRef} id="pieChart"></canvas>
                         </div>
-                    ))}
-                </div>
+                    </div>
 
-                <button className="update-btn" onClick={updateAllCharts}>
-                    🔄 Update Charts
-                </button>
-            </div>
-
-            <div className="charts-section">
-                <div className="chart-container">
-                    <h3>📊 Income Distribution (Pie Chart)</h3>
-                    <div className="chart-wrapper">
-                        <canvas ref={pieCanvasRef} id="pieChart"></canvas>
+                    <div className="chart-container">
+                        <h3>📊 Income Breakdown (Bar Chart)</h3>
+                        <div className="chart-wrapper">
+                            <canvas ref={barCanvasRef} id="barChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <div className="chart-container">
-                    <h3>📊 Income Breakdown (Bar Chart)</h3>
-                    <div className="chart-wrapper">
-                        <canvas ref={barCanvasRef} id="barChart"></canvas>
+                <div className="summary-section">
+                    <h3 style={{ textAlign: 'center', marginBottom: '25px', fontSize: '1.6rem' }}>💡 Income Summary</h3>
+                    <div className="summary-grid">
+                        {summaryData}
                     </div>
                 </div>
             </div>
-
-            <div className="summary-section">
-                <h3 style={{ textAlign: 'center', marginBottom: '25px', fontSize: '1.6rem' }}>💡 Income Summary</h3>
-                <div className="summary-grid">
-                    {summaryData}
-                </div>
-            </div>
-        </div>
         </div>
     );
 }

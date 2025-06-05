@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 // Import your existing CSS file
-import './css/admindashboard.css'; 
+import './css/admindashboard.css';
 
 // --- Custom Notification Component ---
 const Notification = ({ message, type, onClose }) => {
@@ -97,8 +97,8 @@ function AdminDashboard() {
     const [confirmModal, setConfirmModal] = useState({
         isVisible: false,
         message: '',
-        onConfirm: () => {},
-        onCancel: () => {}
+        onConfirm: () => { },
+        onCancel: () => { }
     });
 
     // --- Helper Functions ---
@@ -271,8 +271,8 @@ function AdminDashboard() {
     // Remove user
     const handleRemoveUser = (id) => {
         const userToRemove = users.find(u => u.id === id);
-                setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
-                showNotification(`User ${userToRemove.name} removed successfully`, 'success');
+        setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+        showNotification(`User ${userToRemove.name} removed successfully`, 'success');
     };
 
     // Toggle user status
@@ -336,349 +336,349 @@ function AdminDashboard() {
         <>
             <div className="admindashboard-body">
                 {/* Notification Component */}
-            <Notification message={notification.message} type={notification.type} />
+                <Notification message={notification.message} type={notification.type} />
 
-            {/* Confirmation Modal */}
-            <ConfirmModal
-                isVisible={confirmModal.isVisible}
-                message={confirmModal.message}
-                onConfirm={confirmModal.onConfirm}
-                onCancel={confirmModal.onCancel}
-            />
+                {/* Confirmation Modal */}
+                <ConfirmModal
+                    isVisible={confirmModal.isVisible}
+                    message={confirmModal.message}
+                    onConfirm={confirmModal.onConfirm}
+                    onCancel={confirmModal.onCancel}
+                />
 
-            {/* Header */}
-            <div className="header">
-                <div className="header-content">
-                    <div className="header-left">
-                        <div className="logo">
-                            <Shield size={24} /> {/* Lucide Icon */}
+                {/* Header */}
+                <div className="header">
+                    <div className="header-content">
+                        <div className="header-left">
+                            <div className="logo">
+                                <Shield size={24} /> {/* Lucide Icon */}
+                            </div>
+                            <div className="header-title">
+                                <h1>Admin Dashboard</h1>
+                                <p>Expense Tracker Management</p>
+                            </div>
                         </div>
-                        <div className="header-title">
-                            <h1>Admin Dashboard</h1>
-                            <p>Expense Tracker Management</p>
+                        <div className="header-right">
+                            <span style={{ fontSize: '14px', color: '#6b7280' }}>Hello, Admin!</span>
+                            <div className="user-avatar">A</div>
                         </div>
-                    </div>
-                    <div className="header-right">
-                        <span style={{ fontSize: '14px', color: '#6b7280' }}>Hello, Admin!</span>
-                        <div className="user-avatar">A</div>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Container */}
-            <div className="container">
-                {/* Navigation Tabs */}
-                <div className="nav-tabs">
-                    <button
-                        className={`nav-tab ${activeTab === 'users' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('users')}
-                        data-tab="users"
-                    >
-                        <Users size={18} /> {/* Lucide Icon */}
-                        User Management
-                    </button>
-                    <button
-                        className={`nav-tab ${activeTab === 'config' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('config')}
-                        data-tab="config"
-                    >
-                        <Settings size={18} /> {/* Lucide Icon */}
-                        System Config
-                    </button>
-                </div>
-
-                {/* User Management Tab */}
-                <div id="users-tab" className={`tab-content ${activeTab !== 'users' ? 'hidden' : ''}`}>
-                    {/* Stats Grid */}
-                    <div className="stats-grid">
-                        <div className="stat-card blue">
-                            <div className="stat-info">
-                                <h3>Total Users</h3>
-                                <p id="total-users">{totalUsers}</p>
-                            </div>
-                            <Users size={24} /> {/* Lucide Icon */}
-                        </div>
-                        <div className="stat-card green">
-                            <div className="stat-info">
-                                <h3>Active Users</h3>
-                                <p id="active-users">{activeUsers}</p>
-                            </div>
-                            <Activity size={24} /> {/* Lucide Icon */}
-                        </div>
-                        <div className="stat-card red">
-                            <div className="stat-info">
-                                <h3>Inactive Users</h3>
-                                <p id="inactive-users">{inactiveUsers}</p>
-                            </div>
-                            <UserMinus size={24} /> {/* Lucide Icon */}
-                        </div>
+                {/* Main Container */}
+                <div className="container">
+                    {/* Navigation Tabs */}
+                    <div className="nav-tabs">
+                        <button
+                            className={`nav-tab ${activeTab === 'users' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('users')}
+                            data-tab="users"
+                        >
+                            <Users size={18} /> {/* Lucide Icon */}
+                            User Management
+                        </button>
+                        <button
+                            className={`nav-tab ${activeTab === 'config' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('config')}
+                            data-tab="config"
+                        >
+                            <Settings size={18} /> {/* Lucide Icon */}
+                            System Config
+                        </button>
                     </div>
 
-                    {/* Add User Form */}
-                    <div className="card">
-                        <div className="card-header">
-                            <UserPlus size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
-                            <h3 className="card-title">Add New User</h3>
-                        </div>
-                        <form id="add-user-form" onSubmit={handleAddUserSubmit}>
-                            <div className="form-grid">
-                                <input
-                                    type="text"
-                                    id="user-name"
-                                    className="form-input"
-                                    placeholder="Full Name"
-                                    required
-                                    value={addUserName}
-                                    onChange={(e) => setAddUserName(e.target.value)}
-                                />
-                                <input
-                                    type="email"
-                                    id="user-email"
-                                    className="form-input"
-                                    placeholder="Email Address"
-                                    required
-                                    value={addUserEmail}
-                                    onChange={(e) => setAddUserEmail(e.target.value)}
-                                />
-                                <select
-                                    id="user-role"
-                                    className="form-select"
-                                    required
-                                    value={addUserRole}
-                                    onChange={(e) => setAddUserRole(e.target.value)}
-                                >
-                                    <option value="">Select Role</option>
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
-                                </select>
-                                <button type="submit" className={`adm-btn btn-primary ${isAddUserLoading ? 'loading' : ''}`} disabled={isAddUserLoading}>
-                                    {isAddUserLoading ? 'Adding...' : <><Plus size={18} /> Add User</>}
-                                </button>
+                    {/* User Management Tab */}
+                    <div id="users-tab" className={`tab-content ${activeTab !== 'users' ? 'hidden' : ''}`}>
+                        {/* Stats Grid */}
+                        <div className="stats-grid">
+                            <div className="stat-card blue">
+                                <div className="stat-info">
+                                    <h3>Total Users</h3>
+                                    <p id="total-users">{totalUsers}</p>
+                                </div>
+                                <Users size={24} /> {/* Lucide Icon */}
                             </div>
-                        </form>
-                    </div>
-
-                    {/* Users Table */}
-                    <div className="card">
-                        <div className="card-header">
-                            <Users size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
-                            <h3 className="card-title">User Management</h3>
+                            <div className="stat-card green">
+                                <div className="stat-info">
+                                    <h3>Active Users</h3>
+                                    <p id="active-users">{activeUsers}</p>
+                                </div>
+                                <Activity size={24} /> {/* Lucide Icon */}
+                            </div>
+                            <div className="stat-card red">
+                                <div className="stat-info">
+                                    <h3>Inactive Users</h3>
+                                    <p id="inactive-users">{inactiveUsers}</p>
+                                </div>
+                                <UserMinus size={24} /> {/* Lucide Icon */}
+                            </div>
                         </div>
-                        <div className="table-container">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
-                                        <th>Join Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body">
-                                    {users.length === 0 ? (
+
+                        {/* Add User Form */}
+                        <div className="card">
+                            <div className="card-header">
+                                <UserPlus size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
+                                <h3 className="card-title">Add New User</h3>
+                            </div>
+                            <form id="add-user-form" onSubmit={handleAddUserSubmit}>
+                                <div className="form-grid">
+                                    <input
+                                        type="text"
+                                        id="user-name"
+                                        className="form-input"
+                                        placeholder="Full Name"
+                                        required
+                                        value={addUserName}
+                                        onChange={(e) => setAddUserName(e.target.value)}
+                                    />
+                                    <input
+                                        type="email"
+                                        id="user-email"
+                                        className="form-input"
+                                        placeholder="Email Address"
+                                        required
+                                        value={addUserEmail}
+                                        onChange={(e) => setAddUserEmail(e.target.value)}
+                                    />
+                                    <select
+                                        id="user-role"
+                                        className="form-select"
+                                        required
+                                        value={addUserRole}
+                                        onChange={(e) => setAddUserRole(e.target.value)}
+                                    >
+                                        <option value="">Select Role</option>
+                                        <option value="User">User</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                    <button type="submit" className={`adm-btn btn-primary ${isAddUserLoading ? 'loading' : ''}`} disabled={isAddUserLoading}>
+                                        {isAddUserLoading ? 'Adding...' : <><Plus size={18} /> Add User</>}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Users Table */}
+                        <div className="card">
+                            <div className="card-header">
+                                <Users size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
+                                <h3 className="card-title">User Management</h3>
+                            </div>
+                            <div className="table-container">
+                                <table className="table">
+                                    <thead>
                                         <tr>
-                                            <td colSpan="6" className="text-center" style={{ padding: '48px', color: '#6b7280' }}>
-                                                <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                                                <p>No users found. Add your first user to get started!</p>
-                                            </td>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Join Date</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ) : (
-                                        users.map(user => (
-                                            <tr key={user.id}>
-                                                <td style={{ fontWeight: 500 }}>{user.name}</td>
-                                                <td style={{ color: '#6b7280' }}>{user.email}</td>
-                                                <td>
-                                                    <span className={`badge ${user.role === 'User' ? 'badge-yellow' : user.role === 'Admin' ? 'badge-purple' : 'badge-blue'}`}>
-                                                        {user.role}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={`badge ${user.status === 'Active' ? 'badge-green' : 'badge-red'}`}>
-                                                        {user.status}
-                                                    </span>
-                                                </td>
-                                                <td style={{ color: '#6b7280' }}>{user.joinDate}</td>
-                                                <td>
-                                                    <button
-                                                        className={`adm-btn btn-small ${user.status === 'Active' ? 'btn-warning' : 'btn-success-small'}`}
-                                                        onClick={() => handleToggleUserStatus(user.id)}
-                                                        title={user.status === 'Active' ? 'Deactivate user' : 'Activate user'}
-                                                    >
-                                                        {user.status === 'Active' ? <UserMinus size={18} /> : <UserPlus size={18} />}
-                                                        {user.status === 'Active' ? 'Deactivate' : 'Activate'}
-                                                    </button>
-                                                    <button
-                                                        className="adm-btn btn-small btn-danger"
-                                                        onClick={() => handleRemoveUser(user.id)}
-                                                        style={{ marginLeft: '8px' }}
-                                                        title="Remove user"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                        Remove
-                                                    </button>
+                                    </thead>
+                                    <tbody id="users-table-body">
+                                        {users.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="6" className="text-center" style={{ padding: '48px', color: '#6b7280' }}>
+                                                    <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                                                    <p>No users found. Add your first user to get started!</p>
                                                 </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ) : (
+                                            users.map(user => (
+                                                <tr key={user.id}>
+                                                    <td style={{ fontWeight: 500 }}>{user.name}</td>
+                                                    <td style={{ color: '#6b7280' }}>{user.email}</td>
+                                                    <td>
+                                                        <span className={`badge ${user.role === 'User' ? 'badge-yellow' : user.role === 'Admin' ? 'badge-purple' : 'badge-blue'}`}>
+                                                            {user.role}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className={`badge ${user.status === 'Active' ? 'badge-green' : 'badge-red'}`}>
+                                                            {user.status}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ color: '#6b7280' }}>{user.joinDate}</td>
+                                                    <td>
+                                                        <button
+                                                            className={`adm-btn btn-small ${user.status === 'Active' ? 'btn-warning' : 'btn-success-small'}`}
+                                                            onClick={() => handleToggleUserStatus(user.id)}
+                                                            title={user.status === 'Active' ? 'Deactivate user' : 'Activate user'}
+                                                        >
+                                                            {user.status === 'Active' ? <UserMinus size={18} /> : <UserPlus size={18} />}
+                                                            {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                                        </button>
+                                                        <button
+                                                            className="adm-btn btn-small btn-danger"
+                                                            onClick={() => handleRemoveUser(user.id)}
+                                                            style={{ marginLeft: '8px' }}
+                                                            title="Remove user"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                            Remove
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* System Configuration Tab */}
-                <div id="config-tab" className={`tab-content ${activeTab !== 'config' ? 'hidden' : ''}`}>
-                    {/* System Stats */}
-                    <div className="stats-grid">
-                        <div className="stat-card green">
-                            <div className="stat-info">
-                                <h3>System Status</h3>
-                                <p id="system-status">{systemConfig.systemStatus}</p>
+                    {/* System Configuration Tab */}
+                    <div id="config-tab" className={`tab-content ${activeTab !== 'config' ? 'hidden' : ''}`}>
+                        {/* System Stats */}
+                        <div className="stats-grid">
+                            <div className="stat-card green">
+                                <div className="stat-info">
+                                    <h3>System Status</h3>
+                                    <p id="system-status">{systemConfig.systemStatus}</p>
+                                </div>
+                                <Server size={24} /> {/* Lucide Icon */}
                             </div>
-                            <Server size={24} /> {/* Lucide Icon */}
-                        </div>
-                        <div className="stat-card cyan">
-                            <div className="stat-info">
-                                <h3>Total Storage</h3>
-                                <p id="total-storage">{systemConfig.totalStorage}</p>
+                            <div className="stat-card cyan">
+                                <div className="stat-info">
+                                    <h3>Total Storage</h3>
+                                    <p id="total-storage">{systemConfig.totalStorage}</p>
+                                </div>
+                                <Database size={24} /> {/* Lucide Icon */}
                             </div>
-                            <Database size={24} /> {/* Lucide Icon */}
-                        </div>
-                        <div className="stat-card purple">
-                            <div className="stat-info">
-                                <h3>Last Backup</h3>
-                                <p id="last-backup">{systemConfig.lastBackup}</p>
+                            <div className="stat-card purple">
+                                <div className="stat-info">
+                                    <h3>Last Backup</h3>
+                                    <p id="last-backup">{systemConfig.lastBackup}</p>
+                                </div>
+                                <Shield size={24} /> {/* Lucide Icon */}
                             </div>
-                            <Shield size={24} /> {/* Lucide Icon */}
-                        </div>
-                    </div>
-
-                    {/* Configuration Settings */}
-                    <div className="card">
-                        <div className="card-header">
-                            <Settings size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
-                            <h3 className="card-title">System Configuration</h3>
                         </div>
 
-                        <form id="config-form" onSubmit={handleConfigSubmit}>
-                            <div className="config-grid">
-                                <div>
-                                    <div className="form-group">
-                                        <label className="form-label" htmlFor="max-users">Maximum Users</label>
-                                        <input
-                                            type="number"
-                                            id="max-users"
-                                            className="form-input"
-                                            value={configMaxUsers}
-                                            onChange={(e) => setConfigMaxUsers(parseInt(e.target.value) || 0)}
-                                            min="1"
-                                            max="10000"
-                                        />
+                        {/* Configuration Settings */}
+                        <div className="card">
+                            <div className="card-header">
+                                <Settings size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
+                                <h3 className="card-title">System Configuration</h3>
+                            </div>
+
+                            <form id="config-form" onSubmit={handleConfigSubmit}>
+                                <div className="config-grid">
+                                    <div>
+                                        <div className="form-group">
+                                            <label className="form-label" htmlFor="max-users">Maximum Users</label>
+                                            <input
+                                                type="number"
+                                                id="max-users"
+                                                className="form-input"
+                                                value={configMaxUsers}
+                                                onChange={(e) => setConfigMaxUsers(parseInt(e.target.value) || 0)}
+                                                min="1"
+                                                max="10000"
+                                            />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label className="form-label" htmlFor="data-retention">Data Retention (days)</label>
+                                            <input
+                                                type="number"
+                                                id="data-retention"
+                                                className="form-input"
+                                                value={configDataRetention}
+                                                onChange={(e) => setConfigDataRetention(parseInt(e.target.value) || 0)}
+                                                min="30"
+                                                max="3650"
+                                            />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label className="form-label" htmlFor="backup-frequency">Backup Frequency</label>
+                                            <select
+                                                id="backup-frequency"
+                                                className="form-select"
+                                                value={configBackupFrequency}
+                                                onChange={(e) => setConfigBackupFrequency(e.target.value)}
+                                            >
+                                                <option value="hourly">Hourly</option>
+                                                <option value="daily">Daily</option>
+                                                <option value="weekly">Weekly</option>
+                                                <option value="monthly">Monthly</option>
+                                            </select>
+                                        </div>
                                     </div>
 
-                                    <div className="form-group">
-                                        <label className="form-label" htmlFor="data-retention">Data Retention (days)</label>
-                                        <input
-                                            type="number"
-                                            id="data-retention"
-                                            className="form-input"
-                                            value={configDataRetention}
-                                            onChange={(e) => setConfigDataRetention(parseInt(e.target.value) || 0)}
-                                            min="30"
-                                            max="3650"
-                                        />
-                                    </div>
+                                    <div>
+                                        <div className="form-group">
+                                            <label className="form-label">System Settings</label>
 
-                                    <div className="form-group">
-                                        <label className="form-label" htmlFor="backup-frequency">Backup Frequency</label>
-                                        <select
-                                            id="backup-frequency"
-                                            className="form-select"
-                                            value={configBackupFrequency}
-                                            onChange={(e) => setConfigBackupFrequency(e.target.value)}
-                                        >
-                                            <option value="hourly">Hourly</option>
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                        </select>
+                                            <div className="toggle-item">
+                                                <div className="toggle-label">
+                                                    <Settings size={18} /> {/* Lucide Icon */}
+                                                    Maintenance Mode
+                                                </div>
+                                                <div
+                                                    className={`toggle-switch ${systemConfig.maintenance ? 'active' : ''}`}
+                                                    data-setting="maintenance"
+                                                    onClick={() => handleToggleSwitch('maintenance')}
+                                                >
+                                                    <div className="toggle-handle"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className="toggle-item">
+                                                <div className="toggle-label">
+                                                    <Bell size={18} /> {/* Lucide Icon */}
+                                                    Push Notifications
+                                                </div>
+                                                <div
+                                                    className={`toggle-switch ${systemConfig.notifications ? 'active' : ''}`}
+                                                    data-setting="notifications"
+                                                    onClick={() => handleToggleSwitch('notifications')}
+                                                >
+                                                    <div className="toggle-handle"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className="toggle-item">
+                                                <div className="toggle-label">
+                                                    <Database size={18} /> {/* Lucide Icon */}
+                                                    Auto Backup
+                                                </div>
+                                                <div
+                                                    className={`toggle-switch ${systemConfig.autoBackup ? 'active' : ''}`}
+                                                    data-setting="autoBackup"
+                                                    onClick={() => handleToggleSwitch('autoBackup')}
+                                                >
+                                                    <div className="toggle-handle"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className="toggle-item">
+                                                <div className="toggle-label">
+                                                    <Mail size={18} /> {/* Lucide Icon */}
+                                                    Email Notifications
+                                                </div>
+                                                <div
+                                                    className={`toggle-switch ${systemConfig.emailNotifications ? 'active' : ''}`}
+                                                    data-setting="emailNotifications"
+                                                    onClick={() => handleToggleSwitch('emailNotifications')}
+                                                >
+                                                    <div className="toggle-handle"></div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div>
-                                    <div className="form-group">
-                                        <label className="form-label">System Settings</label>
-
-                                        <div className="toggle-item">
-                                            <div className="toggle-label">
-                                                <Settings size={18} /> {/* Lucide Icon */}
-                                                Maintenance Mode
-                                            </div>
-                                            <div
-                                                className={`toggle-switch ${systemConfig.maintenance ? 'active' : ''}`}
-                                                data-setting="maintenance"
-                                                onClick={() => handleToggleSwitch('maintenance')}
-                                            >
-                                                <div className="toggle-handle"></div>
-                                            </div>
-                                        </div>
-
-                                        <div className="toggle-item">
-                                            <div className="toggle-label">
-                                                <Bell size={18} /> {/* Lucide Icon */}
-                                                Push Notifications
-                                            </div>
-                                            <div
-                                                className={`toggle-switch ${systemConfig.notifications ? 'active' : ''}`}
-                                                data-setting="notifications"
-                                                onClick={() => handleToggleSwitch('notifications')}
-                                            >
-                                                <div className="toggle-handle"></div>
-                                            </div>
-                                        </div>
-
-                                        <div className="toggle-item">
-                                            <div className="toggle-label">
-                                                <Database size={18} /> {/* Lucide Icon */}
-                                                Auto Backup
-                                            </div>
-                                            <div
-                                                className={`toggle-switch ${systemConfig.autoBackup ? 'active' : ''}`}
-                                                data-setting="autoBackup"
-                                                onClick={() => handleToggleSwitch('autoBackup')}
-                                            >
-                                                <div className="toggle-handle"></div>
-                                            </div>
-                                        </div>
-
-                                        <div className="toggle-item">
-                                            <div className="toggle-label">
-                                                <Mail size={18} /> {/* Lucide Icon */}
-                                                Email Notifications
-                                            </div>
-                                            <div
-                                                className={`toggle-switch ${systemConfig.emailNotifications ? 'active' : ''}`}
-                                                data-setting="emailNotifications"
-                                                onClick={() => handleToggleSwitch('emailNotifications')}
-                                            >
-                                                <div className="toggle-handle"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="flex-end">
+                                    <button type="submit" className={`adm-btn btn-success ${isConfigSaving ? 'loading' : ''}`} disabled={isConfigSaving}>
+                                        {isConfigSaving ? 'Saving...' : <><Save size={18} /> Save Configuration</>}
+                                    </button>
                                 </div>
-                            </div>
-
-                            <div className="flex-end">
-                                <button type="submit" className={`adm-btn btn-success ${isConfigSaving ? 'loading' : ''}`} disabled={isConfigSaving}>
-                                    {isConfigSaving ? 'Saving...' : <><Save size={18} /> Save Configuration</>}
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </>
     );
