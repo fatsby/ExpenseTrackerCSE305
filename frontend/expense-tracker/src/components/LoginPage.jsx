@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './css/login_reg.css';
+import StorageHelper from '@/utils/StorageHelper';
 
 function LoginPage() {
-
+    const navigate = useNavigate();
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [rememberLogin, setRememberLogin] = useState(false);
@@ -12,8 +14,12 @@ function LoginPage() {
     const [isLoginFormActive, setIsLoginFormActive] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
 
-
     useEffect(() => {
+        if (StorageHelper.isAdmin()) {
+            navigate('/admin', { replace: true });
+        } else if (StorageHelper.isTokenValid()) {
+            navigate('/pinentry', { replace: true });
+        }
 
         if (localStorage.getItem('remember') === 'true') {
             setLoginUsername(localStorage.getItem('username') || '');
@@ -33,7 +39,7 @@ function LoginPage() {
     const handleLoginSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('localhost:8080/login', {
+            const response = await fetch('http://localhost:8080/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,8 +51,7 @@ function LoginPage() {
             });
 
             if (!response.ok) {
-                const err = await res.text();
-                alert(`Login failed: ${err}`);
+                const err = await response.text();
                 throw new Error(err || 'Login failed');
             };
 
@@ -68,11 +73,11 @@ function LoginPage() {
             // redirect based on role
             setIsLoading(false);
             if (role === 'USER') {
-                navigate('/pinentry');
+                navigate('/pinentry', { replace: true });
             } else if (role === 'ADMIN') {
-                navigate('/admin');
+                navigate('/admin', { replace: true });
             } else {
-                navigate('/');
+                navigate('/', { replace: true });
             }
 
         } catch (err) {
@@ -82,17 +87,37 @@ function LoginPage() {
     };
 
 
-    const handleRegisterSubmit = (event) => {
+    const handleRegisterSubmit = async (event) => {
         event.preventDefault();
 
         if (registerPassword !== confirmPassword) {
             alert('Passwords do not match!');
             return;
         }
-        // In a real app, you'd send this data to a backend for registration
-        alert(`Register attempt for username: ${registerUsername}. (Registration not implemented)`);
-        // Optionally, switch to login form after "registration"
-        // setIsLoginFormActive(true);
+        
+        try {
+            const response = await fetch('http://localhost:8080/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: registerUsername,
+                    password: registerPassword,
+                }),
+            });
+
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(err || 'Login failed');
+            };
+
+            setIsLoading(false);
+            alert('Successfully registered, please login now.');
+        } catch{
+            setIsLoading(false);
+            alert(err.message);
+        }
     };
 
     const handleForgotPasswordClick = (event) => {
