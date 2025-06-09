@@ -487,7 +487,7 @@ function AdminDashboard() {
                                         ) : (
                                             users.map(user => (
                                                 <tr key={user.id}>
-                                                    <td style={{ fontWeight: 500 }}>{user.name}</td>
+                                                    <td style={{ fontWeight: 500, color: '#000000' }}>{user.name}</td>
                                                     <td style={{ color: '#6b7280' }}>{user.email}</td>
                                                     <td>
                                                         <span className={`badge ${user.role === 'User' ? 'badge-yellow' : user.role === 'Admin' ? 'badge-purple' : 'badge-blue'}`}>

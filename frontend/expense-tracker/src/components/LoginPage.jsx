@@ -30,16 +30,33 @@ function LoginPage() {
         };
     }, []);
 
-    const handleLoginSubmit = (event) => {
+    const handleLoginSubmit = async (event) => {
         event.preventDefault();
+        try {
+            const response = await fetch('localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: loginUsername,
+                    password: loginPassword,
+                }),
+            });
 
-        if (!loginUsername || !loginPassword) {
-            alert('Please enter both username and password!');
-            return;
-        }
+            if (!response.ok) {
+                const err = await res.text();
+                alert(`Login failed: ${err}`);
+                throw new Error(err || 'Login failed');
+            };
 
-        if (loginUsername === 'user' && loginPassword === 'password123') {
-            alert('Login Success!');
+            const { token, role, expiration } = await response.json();
+
+            const storage = rememberLogin ? localStorage : sessionStorage;
+            storage.setItem('token', token);
+            storage.setItem('role', role);
+            storage.setItem('expiration', expiration);
+
             if (rememberLogin) {
                 localStorage.setItem('username', loginUsername);
                 localStorage.setItem('remember', 'true');
@@ -47,22 +64,23 @@ function LoginPage() {
                 localStorage.removeItem('username');
                 localStorage.removeItem('remember');
             }
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                window.location.href = '/pinentry';
-            }, 500);
-        } else if (loginUsername === 'admin' && loginPassword === 'password123') {
-            alert('Login Success!');
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                window.location.href = '/admin'; // Redirect to admin page
-            }, 500);
-        } else {
-            alert('Invalid Username or Password!');
+
+            // redirect based on role
+            setIsLoading(false);
+            if (role === 'USER') {
+                navigate('/pinentry');
+            } else if (role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
+
+        } catch (err) {
+            setIsLoading(false);
+            alert(err.message);
         }
     };
+
 
     const handleRegisterSubmit = (event) => {
         event.preventDefault();

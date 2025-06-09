@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class AuthenticationService {
     private final UserRepo userRepo;
@@ -47,8 +49,9 @@ public class AuthenticationService {
 
         String role = user.getRole().name();
         String token = jwtService.generateToken(user);
+        Date expiration = jwtService.extractExpiration(token);
 
-        return new AuthenticationResponse(token, role);
+        return new AuthenticationResponse(token, role, expiration);
     }
 
     public AuthenticationResponse authenticate(User request){
@@ -68,7 +71,8 @@ public class AuthenticationService {
 
         String token = jwtService.generateToken(user);
         String role = user.getRole().name();
+        Date expiration = jwtService.extractExpiration(token);
 
-        return new AuthenticationResponse(token, role);
+        return new AuthenticationResponse(token, role, expiration);
     }
 }
