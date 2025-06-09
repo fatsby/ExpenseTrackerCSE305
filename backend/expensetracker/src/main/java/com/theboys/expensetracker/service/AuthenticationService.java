@@ -1,10 +1,12 @@
 package com.theboys.expensetracker.service;
 
+import com.theboys.expensetracker.exceptions.UserAlreadyExistsException;
 import com.theboys.expensetracker.model.AuthenticationResponse;
 import com.theboys.expensetracker.model.Role;
 import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.repo.UserRepo;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +31,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(User request){
 
         if (userRepo.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username '" + request.getUsername() + "' is already taken.");
+            throw new UserAlreadyExistsException("Username '" + request.getUsername() + "' is already taken.");
         }
 
         User user = new User();
@@ -50,14 +52,21 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(User request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
 
         User user = userRepo.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token = jwtService.generateToken(user);
-
-        // Role is an enum, so we get its name (e.g., "ADMIN")
         String role = user.getRole().name();
 
         return new AuthenticationResponse(token, role);
