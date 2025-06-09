@@ -1,5 +1,8 @@
 # ExpenseTrackerCSE305
  CSE305 Project Expense Tracker
+ 
+# Install this if you can't run the code :
+npm install @vitejs/plugin-react --save-dev
 
 Front-end: ReactJS, Tailwind, shadcn
 <br>
