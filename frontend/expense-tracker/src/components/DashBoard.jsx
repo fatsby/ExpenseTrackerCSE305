@@ -5,21 +5,41 @@ import { jsPDF } from 'jspdf'; // Import jsPDF library
 import './css/dashboard.css';
 
 const DashBoard = () => {
+  const token = localStorage.getItem('token');
+
   // State management
   const [userData, setUserData] = useState({
-    name: "Thien Nguyen Dinh",
+    name: localStorage.getItem('username'),
     budget: 5000,
     income: 8000
   });
 
   const [expenses, setExpenses] = useState([
-    { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
-    { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
-    { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
-    { id: 6, category: "Health", description: "medicine", amount: 150.00, date: "15 July 2023" },
+    // { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
+    // { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    // { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    // { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
+    // { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
+    // { id: 6, category: "Health", description: "medicine", amount: 150.00, date: "15 July 2023" },
   ]);
+
+  const categoryMap = {
+    FOOD: 'Food/Beverage',
+    TRANSPORT: 'Travel/Commute',
+    UTILITIES: 'Utilities',
+    HEALTH: 'Health',
+    EDUCATION: 'Education',
+    OTHER: 'Other',
+    ENTERTAINMENT: 'Entertainment',
+    GIFT: 'Gift',
+  };
+
+  function formatDate(dateString) {
+    // e.g. "2025-06-09" → "09 June 2025"
+    const opts = { day: '2-digit', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-GB', opts);
+  }
+
 
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(true);
   const [isBudgetEditing, setIsBudgetEditing] = useState(false);
@@ -82,41 +102,100 @@ const DashBoard = () => {
       'Health': '🏥',
       'Entertainment': '🕹',
       'Education': '🏫',
-      'Other': '💬'
+      'Other': '💬',
     };
     return icons[category] || '🗿';
   };
 
   // Handle adding new expense
-  const handleAddExpense = () => {
+  const handleAddExpense = async () => {
     const amount = parseFloat(expenseAmount);
     if (!expenseDescription.trim() || isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid description and amount');
       return;
     }
 
-    const today = new Date();
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const date = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
+    // Find the server‐side category code from your display label
+    const categoryCode =
+      Object.entries(categoryMap).find(([, label]) => label === selectedCategory)?.[0] ||
+      selectedCategory;
 
-    const newId = expenses.length > 0 ? Math.max(...expenses.map(e => e.id)) + 1 : 1;
-
-    setExpenses(prev => [...prev, {
-      id: newId,
-      category: selectedCategory,
+    const payload = {
       description: expenseDescription,
       amount,
-      date
-    }]);
+      category: categoryCode
+    };
 
-    // Reset form
-    setExpenseAmount('');
-    setExpenseDescription('');
-    setSelectedCategory('Food/Beverage');
+    
+    if (!token) {
+      alert('Not authenticated');
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:8080/api/expenses/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || 'Failed to add expense');
+      }
+
+      const newExpense = await res.json();
+
+      setExpenses(prev => [
+        ...prev,
+        {
+          id: newExpense.id,
+          category: categoryMap[newExpense.category] || newExpense.category,
+          description: newExpense.description,
+          amount: newExpense.amount,
+          date: formatDate(newExpense.date)
+        }
+      ]);
+
+      // Reset the form
+      setExpenseAmount('');
+      setExpenseDescription('');
+      setSelectedCategory(
+        categoryMap[newExpense.category] || selectedCategory
+      );
+
+    } catch (err) {
+      console.error(err);
+      alert('Error adding expense: ' + err.message);
+    }
   };
 
+
   // Handle deleting expense
-  const handleDeleteExpense = (id) => {
+  const handleDeleteExpense = async (id) => {
     setExpenses(prev => prev.filter(expense => expense.id !== id));
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/expenses/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to delete expense');
+      }
+
+      console.log(response.text());
+    } catch {
+      console.log(response.text());
+    }
   };
 
   // Handle budget save
@@ -128,14 +207,14 @@ const DashBoard = () => {
     setIsBudgetEditing(false);
   };
 
-  // Handle income save
-  const handleSaveIncome = () => {
-    const newIncome = parseFloat(incomeInput);
-    if (!isNaN(newIncome) && newIncome >= 0) {
-      setUserData(prev => ({ ...prev, income: newIncome }));
-    }
-    setIsIncomeEditing(false);
-  };
+  // // Handle income save
+  // const handleSaveIncome = () => {
+  //   const newIncome = parseFloat(incomeInput);
+  //   if (!isNaN(newIncome) && newIncome >= 0) {
+  //     setUserData(prev => ({ ...prev, income: newIncome }));
+  //   }
+  //   setIsIncomeEditing(false);
+  // };
 
   // Get chart data
   const getCategoryData = () => {
@@ -316,6 +395,60 @@ const DashBoard = () => {
     });
   };
 
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('http://localhost:8080/api/user/budget', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch user budget');
+        return res.json();
+      })
+      .then(budgetFromDB => {
+        setUserData(prevData => ({
+          ...prevData,
+          budget: budgetFromDB
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching budget:', error);
+      });
+  }, []);
+
+  //GET expenses from database
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('http://localhost:8080/api/expenses', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load expenses');
+        return res.json();
+      })
+      .then(data => {
+        const transformed = data.map(item => ({
+          id: item.id,
+          category: categoryMap[item.category] || item.category,  // [2]
+          description: item.description,
+          amount: item.amount,
+          date: formatDate(item.date)
+        }));
+        setExpenses(transformed);
+      })
+      .catch(err => {
+        console.error(err);
+        // you could set an error state here…
+      });
+  }, []);
+
   // Update charts when expenses change
   useEffect(() => {
     if (!isLoading) {
@@ -452,7 +585,7 @@ const DashBoard = () => {
               </div>
             </div>
 
-            <div className="financial-item">
+            {/* <div className="financial-item">
               <span>Monthly Income:</span>
               <div id="income-display" className={isIncomeEditing ? 'hidden' : ''}>
                 <span id="income-value">${userData.income.toFixed(2)}</span>
@@ -466,7 +599,7 @@ const DashBoard = () => {
                 />
                 <button className="save-btn" onClick={handleSaveIncome}>Save</button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Add New Expense */}

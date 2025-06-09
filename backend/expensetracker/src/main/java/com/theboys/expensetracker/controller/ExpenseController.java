@@ -3,17 +3,16 @@ package com.theboys.expensetracker.controller;
 import com.theboys.expensetracker.model.Expense;
 import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.service.ExpenseService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/expenses")
 public class ExpenseController {
     ExpenseService expenseService;
 
@@ -21,12 +20,12 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @GetMapping("/api/expenses")
+    @GetMapping
     public ResponseEntity<List<Expense>> getUserExpenses(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(expenseService.getExpensesByUser(user));
     }
 
-    @PostMapping("/api/new_expense")
+    @PostMapping("/new")
     public ResponseEntity<Expense> createExpense(@AuthenticationPrincipal User user, @RequestBody Expense expenseRequest) {
 
         expenseRequest.setUser(user);
@@ -36,4 +35,25 @@ public class ExpenseController {
         return ResponseEntity.ok(savedExpense);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteExpense(@PathVariable int id, @AuthenticationPrincipal User user) {
+        Expense expense = expenseService.getExpenseById(id);
+        if (expense == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Expense not found.");
+        }
+
+        // Verify ownership
+        if (!(expense.getUserId() == user.getId())) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to delete this expense.");  // wrong user
+        }
+
+        // Delete if owner matches
+        expenseService.deleteExpense(id);
+        return ResponseEntity
+                .ok("Expense with id " + id + " deleted successfully.");
+    }
 }

@@ -53,5 +53,7 @@ public class ExpenseService {
         return expenseRepo.save(expense);
     }
 
-
+    public Expense getExpenseById(int id){
+        return expenseRepo.findById(id).get();
+    }
 }

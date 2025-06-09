@@ -11,8 +11,8 @@ public class Expense {
 
     private String description;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int amount;
+    @Column(nullable = false, columnDefinition = "DOUBLE DEFAULT 0")
+    private double amount;
 
     private LocalDate date;
 
@@ -42,7 +42,7 @@ public class Expense {
         this.description = description;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -72,5 +72,9 @@ public class Expense {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public int getUserId(){
+        return user.getId();
     }
 }

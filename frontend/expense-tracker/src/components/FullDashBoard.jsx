@@ -5,7 +5,7 @@ import UserIncome from './UserIncome';
 
 function FullDashBoard() {
     const [activeTab, setActiveTab] = useState('dashboard');
-    const [userName] = useState(localStorage.getItem('userFirstName') || 'Thien');
+    const [userName] = useState(localStorage.getItem('username'));
 
     return (
         <>

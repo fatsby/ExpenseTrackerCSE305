@@ -3,6 +3,7 @@ package com.theboys.expensetracker.controller;
 import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.service.UserDetailsServiceImp;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,5 +26,11 @@ public class UserController {
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return ResponseEntity.ok("Hello World");
+    }
+
+    @GetMapping("api/user/budget")
+    public ResponseEntity<Double> getBudget(@AuthenticationPrincipal User user) {
+        double budget = userDetailsServiceImp.getUserBudget(user);
+        return ResponseEntity.ok(budget);
     }
 }

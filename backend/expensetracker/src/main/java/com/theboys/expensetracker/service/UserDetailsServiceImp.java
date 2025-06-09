@@ -27,4 +27,8 @@ public class UserDetailsServiceImp implements UserDetailsService {
     public List<User> getAllUsers(){
         return userRepo.findAll();
     }
+
+    public Double getUserBudget(User user){
+        return user.getBudget();
+    }
 }
