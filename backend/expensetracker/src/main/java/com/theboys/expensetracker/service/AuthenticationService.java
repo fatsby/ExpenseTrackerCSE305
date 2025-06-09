@@ -27,6 +27,11 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(User request){
+
+        if (userRepo.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username '" + request.getUsername() + "' is already taken.");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
