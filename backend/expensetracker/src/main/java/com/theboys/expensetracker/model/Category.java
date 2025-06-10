@@ -7,7 +7,14 @@ public enum Category {
     ENTERTAINMENT,
     HEALTH,
     EDUCATION,
-    SALARY,
     GIFT,
-    OTHER
+    OTHER,
+//    INCOME CATEGORY
+    SALARY,
+    RENTAL,
+    DIVIDEND,
+    BANK_INTEREST,
+    FREELANCE,
+    BUSINESS,
+    ROYALTY,
 }
