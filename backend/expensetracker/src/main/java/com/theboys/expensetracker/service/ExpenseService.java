@@ -1,5 +1,6 @@
 package com.theboys.expensetracker.service;
 
+import com.theboys.expensetracker.exceptions.ExpenseNotExistsException;
 import com.theboys.expensetracker.model.Category;
 import com.theboys.expensetracker.model.Expense;
 import com.theboys.expensetracker.model.User;
@@ -54,6 +55,10 @@ public class ExpenseService {
     }
 
     public Expense getExpenseById(int id){
-        return expenseRepo.findById(id).get();
+        try {
+            return expenseRepo.findById(id).get();
+        } catch (Exception error){
+            throw new ExpenseNotExistsException("Expense does not exists");
+        }
     }
 }
