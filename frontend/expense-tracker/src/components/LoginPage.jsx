@@ -57,7 +57,7 @@ function LoginPage() {
 
             const { token, role, expiration } = await response.json();
 
-            const storage = rememberLogin ? localStorage : sessionStorage;
+            const storage = localStorage;
             storage.setItem('token', token);
             storage.setItem('role', role);
             storage.setItem('expiration', expiration);

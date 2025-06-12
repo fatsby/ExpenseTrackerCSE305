@@ -1,11 +1,10 @@
 package com.theboys.expensetracker.service;
 
-import com.theboys.expensetracker.exceptions.ExpenseNotExistsException;
+import com.theboys.expensetracker.exceptions.InvalidResourceException;
 import com.theboys.expensetracker.model.Category;
 import com.theboys.expensetracker.model.Expense;
 import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.repo.ExpenseRepo;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -58,7 +57,7 @@ public class ExpenseService {
         try {
             return expenseRepo.findById(id).get();
         } catch (Exception error){
-            throw new ExpenseNotExistsException("Expense does not exists");
+            throw new InvalidResourceException("Expense does not exists");
         }
     }
 }

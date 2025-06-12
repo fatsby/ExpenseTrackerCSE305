@@ -15,7 +15,7 @@ const StorageHelper = {
       return false;
     }
 
-    return true;  
+    return true;
   },
 
   isAdmin: () => {
@@ -23,6 +23,12 @@ const StorageHelper = {
       return false;
     }
     return localStorage.getItem('role') === 'ADMIN';
+  },
+
+  clearStorage: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('expiration');
   },
 };
 

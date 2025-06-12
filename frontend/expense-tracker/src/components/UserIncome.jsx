@@ -3,9 +3,13 @@ import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import './css/userincome.css'; 
+import FetchHelper from '@/utils/FetchHelper';
+import StorageHelper from '@/utils/StorageHelper';
 
 const UserIncome = () => {
   const token = localStorage.getItem('token');
+  const fetchHelper = new FetchHelper(token);
+  
 
   // State management
   const [userData, setUserData] = useState({
@@ -14,20 +18,21 @@ const UserIncome = () => {
   });
 
   const [incomes, setIncomes] = useState([
-    { id: 1, category: "Monthly salary", description: "Software Engineer Salary", amount: 5000.00, date: "01 June 2025" },
-    { id: 2, category: "Freelance work", description: "Web Development Project", amount: 1200.00, date: "15 June 2025" },
-    { id: 3, category: "Dividend income", description: "Stock Dividends", amount: 300.00, date: "10 June 2025" },
-    { id: 4, category: "Bank interest", description: "Savings Account Interest", amount: 25.00, date: "01 June 2025" },
+    // { id: 1, category: "Monthly salary", description: "Software Engineer Salary", amount: 5000.00, date: "01 June 2025" },
+    // { id: 2, category: "Freelance work", description: "Web Development Project", amount: 1200.00, date: "15 June 2025" },
+    // { id: 3, category: "Dividend income", description: "Stock Dividends", amount: 300.00, date: "10 June 2025" },
+    // { id: 4, category: "Bank interest", description: "Savings Account Interest", amount: 25.00, date: "01 June 2025" },
   ]);
 
   const categoryIncomeMap = {
-    MONTHLY_SALARY: 'Monthly salary',
-    DIVIDEND_INCOME: 'Dividend income',
-    RENTAL_INCOME: 'Rental Income',
+    SALARY: 'Monthly salary',
+    DIVIDEND: 'Dividend income',
+    RENTAL: 'Rental Income',
     BANK_INTEREST: 'Bank interest',
-    FREELANCE_WORK: 'Freelance work',
-    BUSINESS_INCOME: 'Business income',
+    FREELANCE: 'Freelance work',
+    BUSINESS: 'Business income',
     ROYALTIES: 'Royalties',
+    OTHER: 'Other',
   };
 
   function formatDate(dateString) {
@@ -36,6 +41,7 @@ const UserIncome = () => {
   }
 
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(true);
+  const [money, setMoney] = useState(0);
   const [incomeAmount, setIncomeAmount] = useState('');
   const [incomeDescription, setIncomeDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Monthly salary');
@@ -104,7 +110,6 @@ const UserIncome = () => {
       return;
     }
 
-    // Find the server-side category code from your display label
     const categoryCode =
       Object.entries(categoryIncomeMap).find(([, label]) => label === selectedCategory)?.[0] ||
       selectedCategory;
@@ -121,7 +126,7 @@ const UserIncome = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:8080/api/incomes/new', {
+      const res = await fetch('http://localhost:8080/api/income/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,6 +142,7 @@ const UserIncome = () => {
 
       const newIncome = await res.json();
 
+      setMoney(money+amount);
       setIncomes(prev => [
         ...prev,
         {
@@ -163,10 +169,13 @@ const UserIncome = () => {
 
   // Handle deleting income
   const handleDeleteIncome = async (id) => {
+    const deletedIncome = incomes.find(income => income.id === id);
     setIncomes(prev => prev.filter(income => income.id !== id));
-
+    if (deletedIncome) {
+      setMoney(prev => prev - deletedIncome.amount);
+    }
     try {
-      const response = await fetch(`http://localhost:8080/api/incomes/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/income/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -363,11 +372,24 @@ const UserIncome = () => {
     });
   };
 
+  //GET user money from db
+    useEffect(() => {
+      if (!token) return;
+  
+      fetchHelper.getUserMoney()
+        .then(moneyFromDB => {
+          setMoney(moneyFromDB);
+        })
+        .catch(err => {
+          console.log("Error fetching user money: ", err);
+        });
+    }, []);
+
   // GET incomes from database
   useEffect(() => {
     if (!token) return;
 
-    fetch('http://localhost:8080/api/incomes', {
+    fetch('http://localhost:8080/api/income', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -441,8 +463,8 @@ const UserIncome = () => {
           <div className="total-amount income-gradient">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
-                <p>Total Income:</p>
-                <h2 id="total-display" className="total-income">$ {totalIncomes.toFixed(2)}</h2>
+                <p>Total Money:</p>
+                <h2 id="total-display" className="total-income">$ {money}</h2>
               </div>
               <div className="income-trend">
                 <span className="trend-icon">📈</span>
@@ -485,7 +507,7 @@ const UserIncome = () => {
               <h2 id="user-fullname">{userData.name}</h2>
             </div>
             <div className="sign-out-btn-ic" id="sign-out-btn-ic">
-              <button type="submit" onClick={() => { alert("Log out"); window.location.href = 'homepage'; }}>Sign Out</button>
+              <button type="submit" onClick={() => { window.location.href = 'homepage'; StorageHelper.clearStorage();}}>Sign Out</button>
             </div>
           </div>
 

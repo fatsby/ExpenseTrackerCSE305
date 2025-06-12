@@ -33,4 +33,10 @@ public class UserController {
         double budget = userDetailsServiceImp.getUserBudget(user);
         return ResponseEntity.ok(budget);
     }
+
+    @GetMapping("api/user/money")
+    public ResponseEntity<Double> getMoney(@AuthenticationPrincipal User user) {
+        double money = userDetailsServiceImp.getUserMoney(user);
+        return ResponseEntity.ok(money);
+    }
 }

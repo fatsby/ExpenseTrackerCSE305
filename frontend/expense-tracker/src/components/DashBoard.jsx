@@ -3,24 +3,27 @@ import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx'; // Import XLSX library
 import { jsPDF } from 'jspdf'; // Import jsPDF library
 import './css/dashboard.css';
+import FetchHelper from '@/utils/FetchHelper';
+import StorageHelper from '@/utils/StorageHelper';
 
 const DashBoard = () => {
   const token = localStorage.getItem('token');
+  const fetchHelper = new FetchHelper(token);
 
   // State management
   const [userData, setUserData] = useState({
     name: localStorage.getItem('username'),
-    budget: 5000,
+    budget: 0,
     income: 8000
   });
 
   const [expenses, setExpenses] = useState([
-    { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
-    { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
-    { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
-    { id: 6, category: "Health", description: "medicine", amount: 100, date: "15 July 2023" },
+    // { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
+    // { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    // { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    // { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
+    // { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
+    // { id: 6, category: "Health", description: "medicine", amount: 100, date: "15 July 2023" },
   ]);
 
   const categoryMap = {
@@ -45,6 +48,7 @@ const DashBoard = () => {
   const [isBudgetEditing, setIsBudgetEditing] = useState(false);
   const [isIncomeEditing, setIsIncomeEditing] = useState(false);
   const [budgetInput, setBudgetInput] = useState(5000);
+  const [money, setMoney] = useState(0);
   const [incomeInput, setIncomeInput] = useState(8000);
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
@@ -61,7 +65,7 @@ const DashBoard = () => {
   // Calculate totals
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const budgetPercentage = Math.min(100, (totalExpenses / userData.budget) * 100);
-  
+
 
   // Export functions
   const exportToExcel = () => {
@@ -115,7 +119,6 @@ const DashBoard = () => {
       return;
     }
 
-    // Find the server‐side category code from your display label
     const categoryCode =
       Object.entries(categoryMap).find(([, label]) => label === selectedCategory)?.[0] ||
       selectedCategory;
@@ -126,7 +129,7 @@ const DashBoard = () => {
       category: categoryCode
     };
 
-    
+
     if (!token) {
       alert('Not authenticated');
       return;
@@ -149,6 +152,8 @@ const DashBoard = () => {
 
       const newExpense = await res.json();
 
+
+      setMoney(money-amount);
       setExpenses(prev => [
         ...prev,
         {
@@ -176,7 +181,11 @@ const DashBoard = () => {
 
   // Handle deleting expense
   const handleDeleteExpense = async (id) => {
+    const deletedExpense = expenses.find(expense => expense.id === id);
     setExpenses(prev => prev.filter(expense => expense.id !== id));
+    if (deletedExpense) {
+      setMoney(prev => prev + deletedExpense.amount);
+    }
 
     try {
       const response = await fetch(`http://localhost:8080/api/expenses/${id}`, {
@@ -395,23 +404,30 @@ const DashBoard = () => {
     });
   };
 
+
+  //GET user money from db
   useEffect(() => {
     if (!token) return;
 
-    fetch('http://localhost:8080/api/user/budget', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch user budget');
-        return res.json();
+    fetchHelper.getUserMoney()
+      .then(moneyFromDB => {
+        setMoney(moneyFromDB);
       })
+      .catch(err => {
+        console.log("Error fetching user money: ", err);
+      });
+  }, []);
+
+
+  //SET user budget from db
+  useEffect(() => {
+    if (!token) return;
+
+    fetchHelper.getUserBudget()
       .then(budgetFromDB => {
         setUserData(prevData => ({
           ...prevData,
-          budget: budgetFromDB
+          budget: budgetFromDB,
         }));
       })
       .catch(error => {
@@ -423,29 +439,19 @@ const DashBoard = () => {
   useEffect(() => {
     if (!token) return;
 
-    fetch('http://localhost:8080/api/expenses', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to load expenses');
-        return res.json();
-      })
+    fetchHelper.getExpenses()
       .then(data => {
         const transformed = data.map(item => ({
           id: item.id,
-          category: categoryMap[item.category] || item.category,  // [2]
+          category: categoryMap[item.category] || item.category,
           description: item.description,
           amount: item.amount,
-          date: formatDate(item.date)
+          date: formatDate(item.date),
         }));
         setExpenses(transformed);
       })
       .catch(err => {
-        console.error(err);
-        // you could set an error state here…
+        console.error('Error fetching expenses:', err);
       });
   }, []);
 
@@ -498,8 +504,8 @@ const DashBoard = () => {
           <div className="total-amount">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
-                <p>Total Budget:</p>
-                <h2 id="total-display" className="total-spending">$ {budgetInput-totalExpenses}</h2>
+                <p>Total Money:</p>
+                <h2 id="total-display" className="total-spending">$ {money}</h2>
               </div>
               {/* <div id="budget-alert">
                 <span className="alert-icon">⚠️</span>
@@ -539,10 +545,10 @@ const DashBoard = () => {
         <div className="panel">
           <div className="user-info">
             <div>
-              <h2 id="user-fullname">{userData.name}</h2>
+              {/* <h2 id="user-fullname">{userData.name}</h2> */}
             </div>
             <div className="sign-out-btn" id="sign-out-btn">
-              <button type="submit" onClick={() => { alert("Log out"); window.location.href = 'homepage'; }}>Sign Out</button>
+              <button type="submit" onClick={() => { window.location.href = 'homepage'; StorageHelper.clearStorage(); }}>Sign Out</button>
             </div>
           </div>
 
@@ -579,7 +585,6 @@ const DashBoard = () => {
                 <input
                   type="number"
                   value={budgetInput}
-                  onChange={(e) => setBudgetInput(e.target.value)}
                 />
                 <button className="save-btn" onClick={handleSaveBudget}>Save</button>
               </div>

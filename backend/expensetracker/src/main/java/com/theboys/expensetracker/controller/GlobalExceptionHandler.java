@@ -1,6 +1,7 @@
 package com.theboys.expensetracker.controller;
 
 import com.theboys.expensetracker.exceptions.ExpenseNotExistsException;
+import com.theboys.expensetracker.exceptions.InvalidResourceException;
 import com.theboys.expensetracker.exceptions.UnauthorizedActionException;
 import com.theboys.expensetracker.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedActionException.class)
     public ResponseEntity<String> handleUnauthorizedAction(UnauthorizedActionException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidResourceException.class)
+    public ResponseEntity<String> handleInvalidResource(InvalidResourceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

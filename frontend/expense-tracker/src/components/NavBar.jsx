@@ -36,7 +36,7 @@ function NavBar({ activeTab, onTabChange, userName }) {
 
                     <div className="user-section">
                         <span className="user-greeting">Hello, {userName}!</span>
-                        {/* <div className="user-avatar">{userName.charAt(0).toUpperCase()}</div> */}
+                        <div className="user-avatar">{userName.charAt(0).toUpperCase()}</div>
                     </div>
                 </div>
             </nav>
