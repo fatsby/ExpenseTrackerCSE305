@@ -7,7 +7,16 @@
     cursor: url('src/assets/icons8-cursor-24.png'), auto;
 
 }
+.admin-logout{
+    border-radius: 28px;
+    color: white;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    transition: 0.3s ease;
 
+}
+.admin-logout:hover{
+    transform: scale(1.03);
+}
 .header {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(20px);

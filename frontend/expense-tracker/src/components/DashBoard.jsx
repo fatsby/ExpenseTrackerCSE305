@@ -5,7 +5,6 @@ import { jsPDF } from 'jspdf'; // Import jsPDF library
 import './css/dashboard.css';
 import FetchHelper from '@/utils/FetchHelper';
 import StorageHelper from '@/utils/StorageHelper';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const DashBoard = () => {
   const token = localStorage.getItem('token');
@@ -217,6 +216,14 @@ const DashBoard = () => {
     setIsBudgetEditing(false);
   };
 
+  // Handle income save
+  // const handleSaveIncome = () => {
+  //   const newIncome = parseFloat(incomeInput);
+  //   if (!isNaN(newIncome) && newIncome >= 0) {
+  //     setUserData(prev => ({ ...prev, income: newIncome }));
+  //   }
+  //   setIsIncomeEditing(false);
+  // };
 
   // Get chart data
   const getCategoryData = () => {

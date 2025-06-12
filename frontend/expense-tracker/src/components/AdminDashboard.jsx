@@ -7,7 +7,7 @@ import {
 
 // Import your existing CSS file
 import './css/admindashboard.css';
-
+import StorageHelper from '@/utils/StorageHelper';
 // --- Custom Notification Component ---
 const Notification = ({ message, type, onClose }) => {
     if (!message) return null;
@@ -361,6 +361,9 @@ function AdminDashboard() {
                         <div className="header-right">
                             <span style={{ fontSize: '14px', color: '#6b7280' }}>Hello, Admin!</span>
                             <div className="user-avatar">A</div>
+                            <div className="logout-btn">
+                                <button type="submit" className="admin-logout" onClick={() => { window.location.href = 'homepage'; StorageHelper.clearStorage();}}>Log out</button>
+                            </div>
                         </div>
                     </div>
                 </div>
