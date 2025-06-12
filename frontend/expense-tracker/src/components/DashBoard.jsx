@@ -153,7 +153,7 @@ const DashBoard = () => {
       const newExpense = await res.json();
 
 
-      setMoney(money-amount);
+      setMoney(money - amount);
       setExpenses(prev => [
         ...prev,
         {
@@ -208,12 +208,31 @@ const DashBoard = () => {
   };
 
   // Handle budget save
-  const handleSaveBudget = () => {
+  const handleSaveBudget = async () => {
     const newBudget = parseFloat(budgetInput);
     if (!isNaN(newBudget) && newBudget >= 0) {
       setUserData(prev => ({ ...prev, budget: newBudget }));
     }
     setIsBudgetEditing(false);
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/budget`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to delete expense');
+      }
+
+      console.log(response.text());
+    } catch {
+      console.log(response.text());
+    }
   };
 
   // Handle income save
