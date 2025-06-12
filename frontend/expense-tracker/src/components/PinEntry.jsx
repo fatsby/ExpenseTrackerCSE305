@@ -6,10 +6,6 @@ function PinEntry() {
     const [currentPin, setCurrentPin] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
     const messageTimeoutRef = useRef(null);
-
-
-
-
     const showMessage = (text, type) => {
         setMessage({ text, type });
         if (messageTimeoutRef.current) {

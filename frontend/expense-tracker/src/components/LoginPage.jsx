@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './css/login_reg.css';
+import StorageHelper from '@/utils/StorageHelper';
 
 function LoginPage() {
-
+    const navigate = useNavigate();
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [rememberLogin, setRememberLogin] = useState(false);
@@ -11,10 +13,13 @@ function LoginPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoginFormActive, setIsLoginFormActive] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const [userPIN, setUserPIN] = useState('');
-
 
     useEffect(() => {
+        if (StorageHelper.isAdmin()) {
+            navigate('/admin', { replace: true });
+        } else if (StorageHelper.isTokenValid()) {
+            navigate('/pinentry', { replace: true });
+        }
 
         if (localStorage.getItem('remember') === 'true') {
             setLoginUsername(localStorage.getItem('username') || '');
@@ -31,16 +36,32 @@ function LoginPage() {
         };
     }, []);
 
-    const handleLoginSubmit = (event) => {
+    const handleLoginSubmit = async (event) => {
         event.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: loginUsername,
+                    password: loginPassword,
+                }),
+            });
 
-        if (!loginUsername || !loginPassword) {
-            alert('Please enter both username and password!');
-            return;
-        }
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(err || 'Login failed');
+            };
 
-        if (loginUsername === 'user' && loginPassword === 'password123') {
-            alert('Login Success!');
+            const { token, role, expiration } = await response.json();
+
+            const storage = rememberLogin ? localStorage : sessionStorage;
+            storage.setItem('token', token);
+            storage.setItem('role', role);
+            storage.setItem('expiration', expiration);
+
             if (rememberLogin) {
                 localStorage.setItem('username', loginUsername);
                 localStorage.setItem('remember', 'true');
@@ -48,34 +69,55 @@ function LoginPage() {
                 localStorage.removeItem('username');
                 localStorage.removeItem('remember');
             }
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                window.location.href = '/pinentry';
-            }, 500);
-        } else if (loginUsername === 'admin' && loginPassword === 'password123') {
-            alert('Login Success!');
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                window.location.href = '/admin'; // Redirect to admin page
-            }, 500);
-        } else {
-            alert('Invalid Username or Password!');
+
+            // redirect based on role
+            setIsLoading(false);
+            if (role === 'USER') {
+                navigate('/pinentry', { replace: true });
+            } else if (role === 'ADMIN') {
+                navigate('/admin', { replace: true });
+            } else {
+                navigate('/', { replace: true });
+            }
+
+        } catch (err) {
+            setIsLoading(false);
+            alert(err.message);
         }
     };
 
-    const handleRegisterSubmit = (event) => {
+
+    const handleRegisterSubmit = async (event) => {
         event.preventDefault();
 
         if (registerPassword !== confirmPassword) {
             alert('Passwords do not match!');
             return;
         }
-        // In a real app, you'd send this data to a backend for registration
-        alert(`Register attempt for username: ${registerUsername}. (Registration not implemented)`);
-        // Optionally, switch to login form after "registration"
-        // setIsLoginFormActive(true);
+        
+        try {
+            const response = await fetch('http://localhost:8080/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: registerUsername,
+                    password: registerPassword,
+                }),
+            });
+
+            if (!response.ok) {
+                const err = await response.text();
+                throw new Error(err || 'Login failed');
+            };
+
+            setIsLoading(false);
+            alert('Successfully registered, please login now.');
+        } catch{
+            setIsLoading(false);
+            alert(err.message);
+        }
     };
 
     const handleForgotPasswordClick = (event) => {
@@ -190,25 +232,6 @@ function LoginPage() {
                             />
                             <i className='bx bx-user'></i>
                         </div>
-
-                        <div className="input_box">
-                            <input
-                                type="password"
-                                placeholder="Enter PIN (4 Digits)"
-                                id="register-pin"
-                                required
-                                value={userPIN}
-                                maxLength={4} 
-                                onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    const numericValue = inputValue.replace(/[^0-9]/g, '');
-                                    const limitedValue = numericValue.slice(0, 4);
-                                    setUserPIN(limitedValue);
-                                }}
-                            />
-                            <i className='bx bx-user'></i>
-                        </div>
-
                         <div className="input_box">
                             <input
                                 type="password"

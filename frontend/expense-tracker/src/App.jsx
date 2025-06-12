@@ -3,6 +3,7 @@ import HomePage from './components/HomePage';
 import AdminDashboard from './components/AdminDashboard';
 import PinEntry from './components/PinEntry';
 import StorageHelper from './utils/StorageHelper';
+import FullDashBoard from './components/FullDashBoard';
 
 function App() {
   
