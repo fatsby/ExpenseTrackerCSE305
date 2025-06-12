@@ -59,14 +59,16 @@ function LoginPage() {
             const { token, role, expiration } = await response.json();
 
             const storage = localStorage;
+            storage.setItem('username', loginUsername);
             storage.setItem('token', token);
             storage.setItem('role', role);
             storage.setItem('expiration', expiration);
 
-
-            localStorage.setItem('username', loginUsername);
-            localStorage.setItem('remember', 'true');
-
+            if (rememberLogin) {
+                localStorage.setItem('remember', 'true');
+            } else {
+                localStorage.removeItem('remember');
+            }
 
             // redirect based on role
             setIsLoading(false);
