@@ -25,7 +25,7 @@ function NavBar({ activeTab, onTabChange, userName }) {
                         <li>
                             <a
                                 href="#income"
-                                className={`nav-link ${activeTab === 'income' ? 'active' : ''}`}
+                                className={`nav-link-income ${activeTab === 'income' ? 'active' : ''}`}
                                 onClick={() => onTabChange('income')}
                             >
                                 <i className="fas fa-dollar-sign"></i>
@@ -36,7 +36,7 @@ function NavBar({ activeTab, onTabChange, userName }) {
 
                     <div className="user-section">
                         <span className="user-greeting">Hello, {userName}!</span>
-                        <div className="user-avatar">{userName.charAt(0).toUpperCase()}</div>
+                        {/* <div className="user-avatar">{userName.charAt(0).toUpperCase()}</div> */}
                     </div>
                 </div>
             </nav>

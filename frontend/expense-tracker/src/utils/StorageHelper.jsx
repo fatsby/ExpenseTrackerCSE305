@@ -15,7 +15,7 @@ const StorageHelper = {
       return false;
     }
 
-    return true;   // explicit success
+    return true;  
   },
 
   isAdmin: () => {

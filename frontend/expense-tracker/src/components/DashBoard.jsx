@@ -15,12 +15,12 @@ const DashBoard = () => {
   });
 
   const [expenses, setExpenses] = useState([
-    // { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
-    // { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    // { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
-    // { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
-    // { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
-    // { id: 6, category: "Health", description: "medicine", amount: 150.00, date: "15 July 2023" },
+    { id: 1, category: "Food/Beverage", description: "Dinner", amount: 12.00, date: "21 May 2023" },
+    { id: 2, category: "Travel/Commute", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    { id: 3, category: "Food/Beverage", description: "Cafe", amount: 240.00, date: "21 May 2023" },
+    { id: 4, category: "Utilities", description: "Clothes", amount: 150.00, date: "15 May 2023" },
+    { id: 5, category: "Utilities", description: "buy onlyfans", amount: 150.00, date: "15 June 2023" },
+    { id: 6, category: "Health", description: "medicine", amount: 100, date: "15 July 2023" },
   ]);
 
   const categoryMap = {
@@ -61,7 +61,7 @@ const DashBoard = () => {
   // Calculate totals
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const budgetPercentage = Math.min(100, (totalExpenses / userData.budget) * 100);
-  const isBudgetAlert = totalExpenses > userData.budget * 0.9;
+  
 
   // Export functions
   const exportToExcel = () => {
@@ -207,7 +207,7 @@ const DashBoard = () => {
     setIsBudgetEditing(false);
   };
 
-  // // Handle income save
+  // Handle income save
   // const handleSaveIncome = () => {
   //   const newIncome = parseFloat(incomeInput);
   //   if (!isNaN(newIncome) && newIncome >= 0) {
@@ -491,20 +491,20 @@ const DashBoard = () => {
         <div className="panel">
           <div className="expense-header">
             <span className="welcome-user">
-              <h1>Hello, <span id="user-firstname">{userData.name.split(' ')[0]}</span></h1>
+              {/* <h1>Hello, <span id="user-firstname">{userData.name.split(' ')[0]}</span></h1> */}
             </span>
           </div>
 
           <div className="total-amount">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
-                <p>Total:</p>
-                <h2 id="total-display" className="total-spending">$ {totalExpenses.toFixed(2)}</h2>
+                <p>Total Budget:</p>
+                <h2 id="total-display" className="total-spending">$ {budgetInput-totalExpenses}</h2>
               </div>
-              <div id="budget-alert" className={`alert ${!isBudgetAlert ? 'hidden' : ''}`}>
+              {/* <div id="budget-alert">
                 <span className="alert-icon">⚠️</span>
                 <span>Budget alert!</span>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -526,7 +526,7 @@ const DashBoard = () => {
                     </div>
                   </div>
                   <div className="expense-amount">
-                    <p>~ $ {expense.amount.toFixed(2)}</p>
+                    <p className="expense-amount">- $ {expense.amount.toFixed(2)}</p>
                     <button className="delete-btn" onClick={() => handleDeleteExpense(expense.id)}>✕</button>
                   </div>
                 </div>

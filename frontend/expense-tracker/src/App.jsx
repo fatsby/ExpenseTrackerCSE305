@@ -5,6 +5,8 @@ import PinEntry from './components/PinEntry';
 import StorageHelper from './utils/StorageHelper';
 
 function App() {
+  
+  
   if (StorageHelper.isAdmin()) {
     return <AdminDashboard />;
   } else if (StorageHelper.isTokenValid()) {

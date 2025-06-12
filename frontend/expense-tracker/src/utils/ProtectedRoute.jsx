@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     }
 
     if (requiredRole && role !== requiredRole) {
-        return <Navigate to="/homepage" replace />; // redirect if not authorized
+        return <Navigate to="/homepage" replace />; 
     }
 
     return children;

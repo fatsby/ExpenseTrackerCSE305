@@ -65,7 +65,7 @@
             gap: 8px;
             font-size: 0.95rem;
         }
-
+       
         .nav-link:hover {
             color: white;
             background: linear-gradient(to right, #E55D87, #5FC3E4);
@@ -76,6 +76,33 @@
         .nav-link.active {
             color: white;
             background: linear-gradient(to right, #667eea, #764ba2);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        /* nav link for income */
+         .nav-link-income {
+            position: relative;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .nav-link-income:hover {
+            color: white;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 93, 135, 0.3);
+        }
+
+        .nav-link-income.active {
+            color: white;
+            background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
