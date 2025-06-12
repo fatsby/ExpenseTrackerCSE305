@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf'; // Import jsPDF library
 import './css/dashboard.css';
 import FetchHelper from '@/utils/FetchHelper';
 import StorageHelper from '@/utils/StorageHelper';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const DashBoard = () => {
   const token = localStorage.getItem('token');
@@ -235,14 +236,6 @@ const DashBoard = () => {
     }
   };
 
-  // Handle income save
-  // const handleSaveIncome = () => {
-  //   const newIncome = parseFloat(incomeInput);
-  //   if (!isNaN(newIncome) && newIncome >= 0) {
-  //     setUserData(prev => ({ ...prev, income: newIncome }));
-  //   }
-  //   setIsIncomeEditing(false);
-  // };
 
   // Get chart data
   const getCategoryData = () => {
@@ -516,7 +509,7 @@ const DashBoard = () => {
         <div className="panel">
           <div className="expense-header">
             <span className="welcome-user">
-              {/* <h1>Hello, <span id="user-firstname">{userData.name.split(' ')[0]}</span></h1> */}
+              <h1>Hello, <span id="user-firstname">{userData.name.split(' ')[0]}</span></h1>
             </span>
           </div>
 
@@ -564,7 +557,7 @@ const DashBoard = () => {
         <div className="panel">
           <div className="user-info">
             <div>
-              {/* <h2 id="user-fullname">{userData.name}</h2> */}
+              <h2 id="user-fullname">{userData.name}</h2>
             </div>
             <div className="sign-out-btn" id="sign-out-btn">
               <button type="submit" onClick={() => { window.location.href = 'homepage'; StorageHelper.clearStorage(); }}>Sign Out</button>
@@ -604,6 +597,7 @@ const DashBoard = () => {
                 <input
                   type="number"
                   value={budgetInput}
+                  onChange={(e) => setBudgetInput(e.target.value)}
                 />
                 <button className="save-btn" onClick={handleSaveBudget}>Save</button>
               </div>

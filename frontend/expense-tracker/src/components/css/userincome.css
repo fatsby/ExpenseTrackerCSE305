@@ -37,7 +37,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.welcome-user h1 {
+.welcome-user-ic h1 {
     font-weight: 600;
     font-size: 50px;
     color: #2e7d32;
@@ -199,14 +199,16 @@
     font-weight: bold;
 }
 
-.user-info {
+.user-info-ic {
     margin-bottom: 20px;
     padding-bottom: 20px;
     border-bottom: 1px solid #e8f5e8;
 }
 
-.user-info h2 {
-    color: #2e7d32;
+.user-info-ic h2 {
+    color: #618778;
+    text-transform: capitalize;
+    
     margin: 0;
     font-size: 28px;
     font-weight: 600;
@@ -236,18 +238,7 @@
     margin-bottom: 15px;
 }
 
-.input-field {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #c8e6c9;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: transparent;
-    transition: 0.4s ease;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    box-sizing: border-box;
-}
+
 
 .input-field:focus {
     
