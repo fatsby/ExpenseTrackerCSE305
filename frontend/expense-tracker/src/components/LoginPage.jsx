@@ -63,13 +63,10 @@ function LoginPage() {
             storage.setItem('role', role);
             storage.setItem('expiration', expiration);
 
-            if (rememberLogin) {
-                localStorage.setItem('username', loginUsername);
-                localStorage.setItem('remember', 'true');
-            } else {
-                localStorage.removeItem('username');
-                localStorage.removeItem('remember');
-            }
+
+            localStorage.setItem('username', loginUsername);
+            localStorage.setItem('remember', 'true');
+
 
             // redirect based on role
             setIsLoading(false);
