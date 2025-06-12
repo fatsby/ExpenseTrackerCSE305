@@ -455,7 +455,7 @@ const UserIncome = () => {
         {/* Left Panel - Income List */}
         <div className="panel">
           <div className="income-header">
-            <span className="welcome-user">
+            <span className="welcome-user-ic">
               <h1>Income <span className="income-accent">Tracker</span></h1>
             </span>
           </div>
@@ -502,7 +502,7 @@ const UserIncome = () => {
 
         {/* Right Panel - Add Income & User Info */}
         <div className="panel">
-          <div className="user-info">
+          <div className="user-info-ic">
             <div>
               <h2 id="user-fullname">{userData.name}</h2>
             </div>

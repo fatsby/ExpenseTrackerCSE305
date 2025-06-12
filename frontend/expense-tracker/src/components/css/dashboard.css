@@ -35,12 +35,16 @@
     flex: 1;
     min-width: 300px;
 }
-
+.user-info{
+    text-transform: capitalize;
+}
 .welcome-user h1 {
     font-weight: 600;
     font-size: 50px;
 }
-
+#user-firstname{
+    text-transform: capitalize;
+}
 .expense-header {
     display: flex;
     justify-content: space-between;
