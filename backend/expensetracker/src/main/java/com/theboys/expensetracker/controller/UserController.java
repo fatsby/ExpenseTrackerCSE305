@@ -50,7 +50,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("api/user/pin")
+    @GetMapping("/pin")
     public ResponseEntity<Integer> getPin(@AuthenticationPrincipal User user) {
         int pin = userDetailsServiceImp.getUserPin(user);
         return ResponseEntity.ok(pin);
