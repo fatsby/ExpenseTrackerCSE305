@@ -4,15 +4,12 @@ import com.theboys.expensetracker.model.User;
 import com.theboys.expensetracker.service.UserDetailsServiceImp;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/user")
 public class UserController {
 
    UserDetailsServiceImp userDetailsServiceImp;
@@ -21,29 +18,24 @@ public class UserController {
         this.userDetailsServiceImp = userService;
     }
 
-    @GetMapping("/admin/api/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userDetailsServiceImp.getAllUsers());
-    }
-
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return ResponseEntity.ok("Hello World");
     }
 
-    @GetMapping("api/user/budget")
+    @GetMapping("/budget")
     public ResponseEntity<Double> getBudget(@AuthenticationPrincipal User user) {
         double budget = userDetailsServiceImp.getUserBudget(user);
         return ResponseEntity.ok(budget);
     }
 
-    @GetMapping("api/user/money")
+    @GetMapping("/money")
     public ResponseEntity<Double> getMoney(@AuthenticationPrincipal User user) {
         double money = userDetailsServiceImp.getUserMoney(user);
         return ResponseEntity.ok(money);
     }
 
-    @PatchMapping("api/user/budget")
+    @PatchMapping("/budget")
     public ResponseEntity<String> updateBudget(@AuthenticationPrincipal User user, @RequestBody Map<String, Double> budgetRequest) {
         try {
             Double newBudget = budgetRequest.get("budget");
@@ -56,6 +48,12 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to update budget");
         }
+    }
+
+    @GetMapping("api/user/pin")
+    public ResponseEntity<Integer> getPin(@AuthenticationPrincipal User user) {
+        int pin = userDetailsServiceImp.getUserPin(user);
+        return ResponseEntity.ok(pin);
     }
 
 }

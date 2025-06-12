@@ -31,7 +31,7 @@ const UserIncome = () => {
     BANK_INTEREST: 'Bank interest',
     FREELANCE: 'Freelance work',
     BUSINESS: 'Business income',
-    ROYALTIES: 'Royalties',
+    ROYALTY: 'Royalties',
     OTHER: 'Other',
   };
 

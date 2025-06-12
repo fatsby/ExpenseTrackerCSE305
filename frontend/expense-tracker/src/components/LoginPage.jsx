@@ -53,7 +53,7 @@ function LoginPage() {
 
             if (!response.ok) {
                 const err = await response.text();
-                throw new Error(err || 'Login failed');
+                throw new Error(err || 'Account not found or you are banned');
             };
 
             const { token, role, expiration } = await response.json();
@@ -104,12 +104,13 @@ function LoginPage() {
                 body: JSON.stringify({
                     username: registerUsername,
                     password: registerPassword,
+                    pin: userPIN
                 }),
             });
 
             if (!response.ok) {
                 const err = await response.text();
-                throw new Error(err || 'Login failed');
+                throw new Error(err || 'Register failed');
             };
 
             setIsLoading(false);

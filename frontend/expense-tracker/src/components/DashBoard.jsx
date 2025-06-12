@@ -5,7 +5,7 @@ import { jsPDF } from 'jspdf'; // Import jsPDF library
 import './css/dashboard.css';
 import FetchHelper from '@/utils/FetchHelper';
 import StorageHelper from '@/utils/StorageHelper';
-import { faL } from '@fortawesome/free-solid-svg-icons';
+
 
 const DashBoard = () => {
   const token = localStorage.getItem('token');

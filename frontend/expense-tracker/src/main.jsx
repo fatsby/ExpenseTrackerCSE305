@@ -10,7 +10,6 @@ import FullDashBoard from './components/FullDashBoard';
 import { createBrowserRouter, RouterProvider } from "react-router";
 import ProtectedRoute from './utils/ProtectedRoute.jsx';
 
-
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/homepage", element: <HomePage /> },
@@ -18,25 +17,23 @@ const router = createBrowserRouter([
   {
     path: "/pinentry",
     element: (
-      <ProtectedRoute> {/* No requiredRole */}
+      <ProtectedRoute> {/* Only requires authentication, not PIN */}
         <PinEntry />
       </ProtectedRoute>
     )
   },
-
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute> {/* No requiredRole */}
+      <ProtectedRoute requiresPinVerification={true}> {/* Requires PIN verification */}
         <FullDashBoard />
       </ProtectedRoute>
     )
   },
-
   {
     path: "/admin",
     element: (
-      <ProtectedRoute requiredRole="ADMIN">
+      <ProtectedRoute requiredRole="ADMIN"> {/* Requires both ADMIN role and PIN */}
         <AdminDashboard />
       </ProtectedRoute>
     )

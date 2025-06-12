@@ -42,6 +42,10 @@ class FetchHelper {
   async getUserMoney() {
     return this.get('/api/user/money');
   }
+
+  async getUserPin(){
+    return this.get('/api/user/pin')
+  }
 }
 
 export default FetchHelper;

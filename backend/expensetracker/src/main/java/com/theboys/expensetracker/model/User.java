@@ -32,8 +32,10 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "DOUBLE DEFAULT 0")
     private double money;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
+    private boolean enabled = true;
 
-    public User(int id, String username, String password, Role role, double money, int pin, double budget) {
+    public User(int id, String username, String password, Role role, double money, int pin, double budget, boolean enabled) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -41,6 +43,7 @@ public class User implements UserDetails {
         this.money = money;
         this.pin = pin;
         this.budget = budget;
+        this.enabled = enabled;
     }
 
     public User() {}
@@ -70,12 +73,20 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    public boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getPassword() {

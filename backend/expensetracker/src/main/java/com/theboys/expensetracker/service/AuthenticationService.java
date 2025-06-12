@@ -54,6 +54,26 @@ public class AuthenticationService {
         return new AuthenticationResponse(token, role, expiration);
     }
 
+    public User adminCreate(User userRequest){
+        if (userRepo.existsByUsername(userRequest.getUsername())) {
+            throw new RuntimeException("Username '" + userRequest.getUsername() + "' already exists");
+        }
+
+        // Create new user
+        User newUser = new User();
+        newUser.setUsername(userRequest.getUsername());
+        newUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        newUser.setRole(userRequest.getRole());
+
+        // Set default values
+        newUser.setPin(1234); // Default PIN
+        newUser.setBudget(8000.0); // Default budget
+        newUser.setMoney(0.0); // Default money
+        newUser.setEnabled(true); // Default enabled
+
+        return userRepo.save(newUser);
+    }
+
     public AuthenticationResponse authenticate(User request){
         try {
             authenticationManager.authenticate(
@@ -69,10 +89,15 @@ public class AuthenticationService {
         User user = userRepo.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        if (!user.isEnabled()) {
+            throw new BadCredentialsException("Your account is disabled");
+        }
+
         String token = jwtService.generateToken(user);
         String role = user.getRole().name();
         Date expiration = jwtService.extractExpiration(token);
 
         return new AuthenticationResponse(token, role, expiration);
     }
+
 }

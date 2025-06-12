@@ -7,6 +7,7 @@ import {
 
 // Import your existing CSS file
 import './css/admindashboard.css';
+import StorageHelper from '@/utils/StorageHelper';
 
 // --- Custom Notification Component ---
 const Notification = ({ message, type, onClose }) => {
@@ -56,12 +57,14 @@ const ConfirmModal = ({ message, onConfirm, onCancel, isVisible }) => {
 };
 
 function AdminDashboard() {
+    const token = localStorage.getItem('token');
+    const adminName = localStorage.getItem('username');
     // --- State Management ---
     const [users, setUsers] = useState([
-        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'User', status: 'Active', joinDate: '2024-01-15' },
-        { id: 2, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'User', status: 'Active', joinDate: '2024-02-10' },
-        { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'User', status: 'Active', joinDate: '2024-01-20' },
-        { id: 4, name: 'Emma Davis', email: 'emma@example.com', role: 'User', status: 'Inactive', joinDate: '2024-03-05' }
+        // { id: 1, name: 'John Doe', email: 'john@example.com', role: 'User', status: 'Active', joinDate: '2024-01-15' },
+        // { id: 2, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'User', status: 'Active', joinDate: '2024-02-10' },
+        // { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'User', status: 'Active', joinDate: '2024-01-20' },
+        // { id: 4, name: 'Emma Davis', email: 'emma@example.com', role: 'User', status: 'Inactive', joinDate: '2024-03-05' }
     ]);
     const nextUserId = useRef(5); // Use useRef for mutable ID counter
 
@@ -75,11 +78,117 @@ function AdminDashboard() {
         emailNotifications: false
     });
 
+    const createUser = async (userData) => {
+        try {
+            const response = await fetch('http://localhost:8080/admin/api/users/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: userData.username,
+                    password: userData.password,
+                    role: userData.role
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText.replace('Error creating user: ', ''));
+            }
+
+            const successMessage = await response.text();
+            console.log(successMessage);
+
+            // Refresh user list
+            await fetchUsers();
+
+            return successMessage;
+        } catch (error) {
+            console.error('Error creating user:', error.message);
+            throw error; // Re-throw to be caught by handleAddUserSubmit
+        }
+    };
+
+
+
+    const handleDeactivateUser = async (id) => {
+        const deactivatedUser = users.find(user => user.id === id);
+        try {
+            const response = await fetch(`http://localhost:8080/admin/api/users/${id}/deactivate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || 'Failed to deactivate User');
+            }
+
+            console.log(response.text());
+        } catch {
+            console.log(response.text());
+        }
+    };
+
+    const handleActivateUser = async (id) => {
+        const deactivatedUser = users.find(user => user.id === id);
+        try {
+            const response = await fetch(`http://localhost:8080/admin/api/users/${id}/activate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || 'Failed to activate User');
+            }
+
+            console.log(response.text());
+        } catch {
+            console.log(response.text());
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/admin/api/users', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch users: ${response.status}`);
+            }
+
+            const userData = await response.json();
+            setUsers(userData);
+
+        } catch (err) {
+            showNotification('Error fetching users', 'error');
+        } finally {
+            console.log(users);
+        }
+    };
+
     const [activeTab, setActiveTab] = useState('users'); // 'users' or 'config'
 
     // Add User Form States
     const [addUserName, setAddUserName] = useState('');
-    const [addUserEmail, setAddUserEmail] = useState('');
+    const [addUserPassword, setAddUserPassword] = useState('');
     const [addUserRole, setAddUserRole] = useState('');
     const [isAddUserLoading, setIsAddUserLoading] = useState(false);
 
@@ -122,8 +231,11 @@ function AdminDashboard() {
 
     // Update statistics (derived state, but useful as a function for clarity)
     const totalUsers = users.length;
-    const activeUsers = users.filter(u => u.status === 'Active').length;
-    const inactiveUsers = users.filter(u => u.status === 'Inactive').length;
+    const activeUsers = users.filter(u => u.enabled === true).length;
+    const inactiveUsers = users.filter(u => u.enabled === false).length;
+    const adminUsers = users.filter(u => u.role === 'ADMIN').length;
+    const totalMoney = users.reduce((sum, user) => sum + user.money, 0);
+    const totalBudget = users.reduce((sum, user) => sum + user.budget, 0);
 
     // Update system status (simulated)
     const updateSystemStatus = useCallback(() => {
@@ -208,34 +320,30 @@ function AdminDashboard() {
     };
 
     // Add new user form handling
-    const handleAddUserSubmit = (e) => {
+    const handleAddUserSubmit = async (e) => {
         e.preventDefault();
-
-        // Clear previous error states (CSS classes)
-        // In React, you'd typically manage error states via useState for each input
-        // For simplicity, I'm skipping direct DOM manipulation for error classes here,
-        // but you'd implement it by adding a state like `isNameInvalid` etc.
 
         let hasError = false;
         if (!addUserName.trim()) {
             hasError = true;
-            // You'd set a state for input error here
+            showNotification('Please enter a username', 'error');
         }
-        if (!addUserEmail.trim() || !isValidEmail(addUserEmail)) {
-            showNotification('Please enter a valid email address', 'error');
+        if (!addUserPassword.trim()) {
             hasError = true;
+            showNotification('Please enter a password', 'error');
         }
         if (!addUserRole) {
             hasError = true;
+            showNotification('Please select a role', 'error');
         }
 
         if (hasError) {
-            showNotification('Please fill in all required fields correctly', 'error');
             return;
         }
 
-        if (users.some(user => user.email.toLowerCase() === addUserEmail.toLowerCase())) {
-            showNotification('A user with this email already exists', 'error');
+        // Check if user already exists (optional client-side check)
+        if (users.some(user => user.username.toLowerCase() === addUserName.toLowerCase())) {
+            showNotification('A user with this username already exists', 'error');
             return;
         }
 
@@ -246,48 +354,106 @@ function AdminDashboard() {
 
         setIsAddUserLoading(true);
 
-        setTimeout(() => {
-            const newUser = {
-                id: nextUserId.current++,
-                name: addUserName,
-                email: addUserEmail,
-                role: addUserRole,
-                status: 'Active',
-                joinDate: new Date().toISOString().split('T')[0]
-            };
+        try {
+            // Use the existing createUser function
+            await createUser({
+                username: addUserName,
+                password: addUserPassword, // This is actually the password field
+                role: addUserRole.toUpperCase() // Convert to uppercase to match backend enum
+            });
 
-            setUsers(prevUsers => [...prevUsers, newUser]);
-
-            // Clear form
+            // Clear form on success
             setAddUserName('');
-            setAddUserEmail('');
+            setAddUserPassword('');
             setAddUserRole('');
 
+            showNotification(`User ${addUserName} created successfully!`, 'success');
+        } catch (error) {
+            showNotification(`Error creating user: ${error.message}`, 'error');
+        } finally {
             setIsAddUserLoading(false);
-            showNotification(`User ${addUserName} added successfully!`, 'success');
-        }, 1000);
+        }
     };
 
+
     // Remove user
-    const handleRemoveUser = (id) => {
+    const handleRemoveUser = async (id) => {
         const userToRemove = users.find(u => u.id === id);
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
-        showNotification(`User ${userToRemove.name} removed successfully`, 'success');
+
+        // Show confirmation modal before deletion
+        setConfirmModal({
+            isVisible: true,
+            message: `Are you sure you want to permanently delete user "${userToRemove.username}"? This action cannot be undone.`,
+            onConfirm: async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/admin/api/users/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Failed to delete user');
+                    }
+
+                    const successMessage = await response.text();
+
+                    // Remove user from local state
+                    setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+
+                    // Show success notification
+                    showNotification(`User ${userToRemove.username} deleted successfully`, 'success');
+
+                    console.log(successMessage);
+                } catch (error) {
+                    console.error('Error deleting user:', error.message);
+                    showNotification(`Error deleting user: ${error.message}`, 'error');
+                } finally {
+                    // Hide confirmation modal
+                    setConfirmModal({
+                        isVisible: false,
+                        message: '',
+                        onConfirm: () => { },
+                        onCancel: () => { }
+                    });
+                }
+            },
+            onCancel: () => {
+                // Hide confirmation modal without action
+                setConfirmModal({
+                    isVisible: false,
+                    message: '',
+                    onConfirm: () => { },
+                    onCancel: () => { }
+                });
+            }
+        });
     };
+
 
     // Toggle user status
     const handleToggleUserStatus = (id) => {
+        const triggeredUser = users.find(user => user.id === id);
         setUsers(prevUsers =>
             prevUsers.map(user => {
                 if (user.id === id) {
                     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
                     const action = newStatus === 'Active' ? 'activated' : 'deactivated';
-                    showNotification(`User ${user.name} ${action} successfully`, 'success');
+                    showNotification(`User ${user.username} ${action} successfully`, 'success');
                     return { ...user, status: newStatus };
                 }
                 return user;
             })
         );
+        if (triggeredUser.enabled) {
+            handleDeactivateUser(id);
+        } else {
+            handleActivateUser(id);
+        }
+
     };
 
     // Toggle switches functionality
@@ -359,8 +525,11 @@ function AdminDashboard() {
                             </div>
                         </div>
                         <div className="header-right">
-                            <span style={{ fontSize: '14px', color: '#6b7280' }}>Hello, Admin!</span>
+                            <span style={{ fontSize: '14px', color: '#6b7280' }}>Hello, {adminName}!</span>
                             <div className="user-avatar">A</div>
+                            <div className="sign-out-btn" id="sign-out-btn">
+                                <button type="submit" onClick={() => { window.location.href = 'homepage'; StorageHelper.clearStorage(); }}>Sign Out</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -396,28 +565,36 @@ function AdminDashboard() {
                                     <h3>Total Users</h3>
                                     <p id="total-users">{totalUsers}</p>
                                 </div>
-                                <Users size={24} /> {/* Lucide Icon */}
+                                <Users size={24} />
                             </div>
                             <div className="stat-card green">
                                 <div className="stat-info">
                                     <h3>Active Users</h3>
                                     <p id="active-users">{activeUsers}</p>
                                 </div>
-                                <Activity size={24} /> {/* Lucide Icon */}
+                                <Activity size={24} />
                             </div>
                             <div className="stat-card red">
                                 <div className="stat-info">
                                     <h3>Inactive Users</h3>
                                     <p id="inactive-users">{inactiveUsers}</p>
                                 </div>
-                                <UserMinus size={24} /> {/* Lucide Icon */}
+                                <UserMinus size={24} />
+                            </div>
+                            <div className="stat-card purple">
+                                <div className="stat-info">
+                                    <h3>Total Money</h3>
+                                    <p>${totalMoney.toLocaleString()}</p>
+                                </div>
+                                <Database size={24} />
                             </div>
                         </div>
+
 
                         {/* Add User Form */}
                         <div className="card">
                             <div className="card-header">
-                                <UserPlus size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
+                                <UserPlus size={18} style={{ color: '#3b82f6' }} />
                                 <h3 className="card-title">Add New User</h3>
                             </div>
                             <form id="add-user-form" onSubmit={handleAddUserSubmit}>
@@ -426,19 +603,19 @@ function AdminDashboard() {
                                         type="text"
                                         id="user-name"
                                         className="form-input"
-                                        placeholder="Full Name"
+                                        placeholder="Username"
                                         required
                                         value={addUserName}
                                         onChange={(e) => setAddUserName(e.target.value)}
                                     />
                                     <input
-                                        type="email"
-                                        id="user-email"
+                                        type="password"
+                                        id="user-password"
                                         className="form-input"
-                                        placeholder="Email Address"
+                                        placeholder="Password"
                                         required
-                                        value={addUserEmail}
-                                        onChange={(e) => setAddUserEmail(e.target.value)}
+                                        value={addUserPassword} // Keep the same state variable for now
+                                        onChange={(e) => setAddUserPassword(e.target.value)}
                                     />
                                     <select
                                         id="user-role"
@@ -448,72 +625,73 @@ function AdminDashboard() {
                                         onChange={(e) => setAddUserRole(e.target.value)}
                                     >
                                         <option value="">Select Role</option>
-                                        <option value="User">User</option>
-                                        <option value="Admin">Admin</option>
+                                        <option value="USER">User</option>
+                                        <option value="ADMIN">Admin</option>
                                     </select>
                                     <button type="submit" className={`adm-btn btn-primary ${isAddUserLoading ? 'loading' : ''}`} disabled={isAddUserLoading}>
-                                        {isAddUserLoading ? 'Adding...' : <><Plus size={18} /> Add User</>}
+                                        {isAddUserLoading ? 'Creating...' : <><Plus size={18} /> Add User</>}
                                     </button>
                                 </div>
                             </form>
                         </div>
 
+
                         {/* Users Table */}
                         <div className="card">
                             <div className="card-header">
-                                <Users size={18} style={{ color: '#3b82f6' }} /> {/* Lucide Icon */}
+                                <Users size={18} style={{ color: '#3b82f6' }} />
                                 <h3 className="card-title">User Management</h3>
                             </div>
                             <div className="table-container">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
+                                            <th>ID</th>
+                                            <th>Username</th>
                                             <th>Role</th>
                                             <th>Status</th>
-                                            <th>Join Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="users-table-body">
                                         {users.length === 0 ? (
                                             <tr>
-                                                <td colSpan="6" className="text-center" style={{ padding: '48px', color: '#6b7280' }}>
+                                                <td colSpan="8" className="text-center" style={{ padding: '48px', color: '#6b7280' }}>
                                                     <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                                                    <p>No users found. Add your first user to get started!</p>
+                                                    <p>No users found. Loading users...</p>
                                                 </td>
                                             </tr>
                                         ) : (
                                             users.map(user => (
                                                 <tr key={user.id}>
-                                                    <td style={{ fontWeight: 500, color: '#000000' }}>{user.name}</td>
-                                                    <td style={{ color: '#6b7280' }}>{user.email}</td>
+                                                    <td style={{ fontWeight: 500, color: '#000000' }}>{user.id}</td>
+                                                    <td style={{ fontWeight: 500, color: '#000000' }}>{user.username}</td>
                                                     <td>
-                                                        <span className={`badge ${user.role === 'User' ? 'badge-yellow' : user.role === 'Admin' ? 'badge-purple' : 'badge-blue'}`}>
+                                                        <span className={`badge ${user.role === 'USER' ? 'badge-blue' : user.role === 'ADMIN' ? 'badge-purple' : 'badge-yellow'}`}>
                                                             {user.role}
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <span className={`badge ${user.status === 'Active' ? 'badge-green' : 'badge-red'}`}>
-                                                            {user.status}
+                                                        <span className={`badge ${user.enabled ? 'badge-green' : 'badge-red'}`}>
+                                                            {user.enabled ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </td>
-                                                    <td style={{ color: '#6b7280' }}>{user.joinDate}</td>
                                                     <td>
                                                         <button
-                                                            className={`adm-btn btn-small ${user.status === 'Active' ? 'btn-warning' : 'btn-success-small'}`}
+                                                            className={`adm-btn btn-small ${user.enabled ? 'btn-warning' : 'btn-success-small'}`}
                                                             onClick={() => handleToggleUserStatus(user.id)}
-                                                            title={user.status === 'Active' ? 'Deactivate user' : 'Activate user'}
+                                                            title={user.enabled ? 'Deactivate user' : 'Activate user'}
+                                                            disabled={user.role === 'ADMIN'}
                                                         >
-                                                            {user.status === 'Active' ? <UserMinus size={18} /> : <UserPlus size={18} />}
-                                                            {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                                            {user.enabled ? <UserMinus size={18} /> : <UserPlus size={18} />}
+                                                            {user.enabled ? 'Deactivate' : 'Activate'}
                                                         </button>
                                                         <button
                                                             className="adm-btn btn-small btn-danger"
                                                             onClick={() => handleRemoveUser(user.id)}
                                                             style={{ marginLeft: '8px' }}
                                                             title="Remove user"
+                                                            disabled={user.role === 'ADMIN'}
                                                         >
                                                             <Trash2 size={18} />
                                                             Remove
@@ -526,6 +704,8 @@ function AdminDashboard() {
                                 </table>
                             </div>
                         </div>
+
+
                     </div>
 
                     {/* System Configuration Tab */}

@@ -1,8 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './css/pinentry.css';
+import FetchHelper from '@/utils/FetchHelper';
 
-const correctPin = '1234'; // define pin 
+
+
 function PinEntry() {
+    const token = localStorage.getItem('token');
+    const [correctPin, setCorrectPin] = useState('1234');
+    const fetchHelper = new FetchHelper(token);
+
+    useEffect(() => {
+        if (!token) return;
+
+        fetchHelper.getUserPin()
+            .then(pinFromDB => {
+                const pinString = pinFromDB.toString();
+                setCorrectPin(pinString);
+            })
+            .catch(err => {
+                console.log("Error fetching user pin: ", err);
+            });
+    }, []);
+    
     const [currentPin, setCurrentPin] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
     const messageTimeoutRef = useRef(null);
@@ -29,6 +48,7 @@ function PinEntry() {
 
         if (currentPin === correctPin) {
             showMessage('PIN correct! Access granted.', 'success');
+            sessionStorage.setItem('pinVerified', 'true');
             setTimeout(() => {
 
                 window.location.href = 'dashboard';

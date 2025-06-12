@@ -29,6 +29,7 @@ const StorageHelper = {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('expiration');
+    sessionStorage.removeItem('pinVerified');
   },
 };
 
