@@ -43,4 +43,13 @@ public class UserDetailsServiceImp implements UserDetailsService {
         existingUser.setMoney(money);
         userRepo.save(existingUser);
     }
+
+    public void updateUserBudget(User user, Double newBudget) {
+        User existingUser = userRepo.findById(user.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        existingUser.setBudget(newBudget);
+        userRepo.save(existingUser);
+    }
+
 }
