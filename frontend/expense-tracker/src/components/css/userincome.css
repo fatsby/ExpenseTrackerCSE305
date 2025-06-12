@@ -238,8 +238,6 @@
     margin-bottom: 15px;
 }
 
-
-
 .input-field:focus {
     
     padding: 15px;
@@ -300,7 +298,7 @@
     transform: translateY(-2px);
 }
 
-button.add-btn {
+button.income-add-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -308,7 +306,7 @@ button.add-btn {
     font-weight: bold;
 }
 
-.add-btn {
+.income-add-btn {
     width: 50%;
     color: white;
     border: 1px solid rgb(219, 217, 217);
@@ -326,7 +324,7 @@ button.add-btn {
     background: linear-gradient(to right, #4caf50, #81c784);
 }
 
-.add-btn:hover {
+.income-add-btn:hover {
     background: linear-gradient(to right, #388e3c, #66bb6a);
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
@@ -659,11 +657,3 @@ button.add-btn {
     border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #4caf50, #81c784);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #388e3c, #66bb6a);
-}
