@@ -14,3 +14,7 @@ Password: Crocodilo@1
 USERNAME: admin
 <br>
 password: 123
+
+# Images:
+
+![Screenshot]([https://github.com/username/repo/assets/image-id](https://github.com/fatsby/ExpenseTrackerCSE305/blob/main/readmeIMGs/Screenshot_1.png))
