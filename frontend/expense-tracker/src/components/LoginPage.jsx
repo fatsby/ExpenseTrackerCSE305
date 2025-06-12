@@ -13,6 +13,7 @@ function LoginPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoginFormActive, setIsLoginFormActive] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+    const [userPIN, setUserPIN] = useState('');
 
     useEffect(() => {
         if (StorageHelper.isAdmin()) {
@@ -94,7 +95,7 @@ function LoginPage() {
             alert('Passwords do not match!');
             return;
         }
-        
+
         try {
             const response = await fetch('http://localhost:8080/register', {
                 method: 'POST',
@@ -114,7 +115,7 @@ function LoginPage() {
 
             setIsLoading(false);
             alert('Successfully registered, please login now.');
-        } catch{
+        } catch {
             setIsLoading(false);
             alert(err.message);
         }
@@ -232,6 +233,27 @@ function LoginPage() {
                             />
                             <i className='bx bx-user'></i>
                         </div>
+
+                        <div className="input_box">
+                            <input
+                                type="password"
+                                placeholder="Enter PIN (4 Digits)"
+                                id="register-pin"
+                                required
+                                value={userPIN}
+                                maxLength={4} 
+                                onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(/[^0-9]/g, '');
+
+                                    const limitedValue = numericValue.slice(0, 4);
+
+                                    setUserPIN(limitedValue);
+                                }}
+                            />
+                            <i className='bx bx-user'></i>
+                        </div>
+
                         <div className="input_box">
                             <input
                                 type="password"
