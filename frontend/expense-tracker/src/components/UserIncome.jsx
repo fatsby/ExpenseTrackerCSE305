@@ -563,7 +563,7 @@ const UserIncome = () => {
                 ))}
               </div>
 
-              <button id="add-income-btn" className="add-btn income-add-btn" onClick={handleAddIncome}>Add Income</button>
+              <button id="add-income-btn" className=" income-add-btn" onClick={handleAddIncome}>Add Income</button>
             </div>
           </div>
         </div>
